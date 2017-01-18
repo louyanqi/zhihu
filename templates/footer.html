@@ -1,0 +1,112 @@
+{% load static %}
+<div class="ui basic segment footer" style="margin-top: 100px">
+    <div class="ui divider" style="width:960px;height:3px;"></div>
+    <div class="ui three column grid">
+        <div class="column">
+            <div class="footer1">Developed by Kirito</div>
+        </div>
+        <div class="column">
+            <div class="footer2">关于我们 . 加入我们 . 联系我们</div>
+        </div>
+        <div class="column">
+            <div class="footer3">京ICP备15047012号-2</div>
+        </div>
+    </div>
+</div>
+
+<div id="question-modal" class="ui segments modal">
+    <div class="ui borderless menu modal-menu">
+        <div class="item">
+            <h3 class="ui inverted header">提问</h3>
+        </div>
+        <div class="right menu">
+            <div class="item">
+                <a href="javascript:$('.ui.modal').modal('hide')"><div class="ui circular image"><img src="{% static 'images/close_icon.png' %}" ></div></a>
+            </div>
+        </div>
+    </div>
+    <div class="ui basic segment container" style="left: 0">
+        <div class="ui form">
+            <div class="field">
+                <input v-model="question.title" type="text" name="question" placeholder="写下你的问题">
+            </div>
+            <div class="field">
+                <label style="margin: 15px 0 10px 0">问题说明：
+                    <span style="float: right;"><img src="{% static 'images/img_icon.png' %}"></span>
+                    <span class="" style="float: right; margin-right: 10px"><img src="{% static 'images/code_icon.png' %}"></span>
+                </label>
+                <textarea v-model="question.desc" placeholder="问题背景、相关代码及截图等详细信息"></textarea>
+            </div>
+            <div class="field">
+                <label style="margin: 15px 0 10px 0">添加话题：</label>
+                <input v-model="question.topic" type="text" name="" placeholder="话题之间用空格隔开">
+            </div>
+        </div>
+        <button v-on:click="addQuestion" class="ui blue right floated button" style="margin-top: 25px">发布</button>
+        <a href="javascript:$('.ui.modal').modal('hide')" class="ui inverted right floated button" style="margin-top: 25px; color: #6699CC">取消</a>
+    </div>
+</div>
+
+
+<div id="register-modal" class="ui basic modal">
+    <div class="ui segment container" style="width: 302px;height: 331px;border-radius: 5px;
+    box-shadow: 0 0 15px 0 rgba(0,0,0,.3);">
+        <div style="color: black;text-align: right;margin-top: -6px;width: 280px">
+            <i class="remove icon" onclick="javascript:$('.ui.modal').modal('hide')" style="cursor: pointer;"></i>
+        </div>
+        <div class="login-title" style="font-size: 16px;line-height: 18px;font-weight: 700;margin-top: 10px;color: #787878;text-align: center;">
+            注册Exchange
+            <div class="sub-title" style="font-size: 14px;font-weight: 400;text-align: center;margin-top: 9px">
+                与世界分享你的知识、经验和见解
+            </div>
+        </div>
+        <form class="ui form" id="login-form" style="margin-top: 15px;height: 205px">
+            <div class="field" v-on:click="msgShow=false">
+                <p id="form-message" v-if="msgShow">[[username_err]]</p>
+                <input required v-model="username" type="text" name="username" placeholder="名字">
+            </div>
+            <div class="field" v-on:click="msgShow=false">
+                <p id="form-message2" v-if="msgShow">[[email_err]]</p>
+                <input v-model="email" type="email" name="email" placeholder="邮箱">
+            </div>
+            <div class="field" v-on:click="msgShow=false">
+                <p id="form-message3" v-if="msgShow">[[password_err]]</p>
+                <input v-model="password" type="password" name="password" placeholder="密码（六位以上）">
+            </div>
+            <a v-on:click="registerUser" class="ui blue button" style="width: 270px">注册</a>
+        </form>
+        <div class="login-foot" style="color: black;float: right;">
+            已有帐号？<span><a style="cursor: pointer" onclick="$('#register-modal').modal('hide');$('#login-modal').modal('show')">登录</a></span>
+        </div>
+    </div>
+</div>
+
+
+<div id="login-modal" class="ui basic modal">
+    <div class="ui segment container" style="width: 302px;height: 291px;border-radius: 5px;
+    box-shadow: 0 0 15px 0 rgba(0,0,0,.3);">
+		<div style="color: black;text-align: right;margin-top: -6px;width: 280px">
+			<i class="remove icon" onclick="javascript:$('.ui.modal').modal('hide')" style="cursor: pointer;"></i>
+		</div>
+		<div class="login-title" style="font-size: 16px;line-height: 18px;font-weight: 700;margin-top: 10px;color: #787878;text-align: center;">
+			登录Exchange
+			<div class="sub-title" style="font-size: 14px;font-weight: 400;text-align: center;margin-top: 9px">
+				与世界分享你的知识、经验和见解
+			</div>
+		</div>
+		<form class="ui form" id="login-form" style="margin-top: 20px">
+	        <div class="field" v-on:click="msgShow=false">
+	            <p v-if="msgShow" id="form-message">[[email_err]]</p>
+	            <input v-model="email" type="email" placeholder="邮箱">
+	        </div>
+	        <div class="field">
+	            <p v-if="msgShow" id="form-message2">[[password_err]]</p>
+	            <input v-model="password" type="password" placeholder="密码">
+	        </div>
+	        <a v-on:click="logIn" class="ui blue button" style="width: 270px">登录</a>
+	        <div class="login-foot" style="color: black;float: right;margin-top: 15px;">
+	            忘记密码？
+	        </div>
+	    </form>
+	</div>
+</div>

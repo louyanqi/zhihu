@@ -1,0 +1,145 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>搜索页</title>
+    <link rel="stylesheet" href="{% static 'css/semantic.css' %}" media="screen" title="no title">
+    <link rel="stylesheet" href="{% static 'css/common.css' %}" media="screen" title="no title" charset="utf-8">
+    <link rel="stylesheet" href="{% static 'css/search.css' %}" media="screen" title="no title">
+  </head>
+  <body>
+ <div class="top nav">
+        <div class="ui fixed borderless menu">
+            <div class="logo item">
+                <a href="{% url 'home' %}">
+                    <img src="{% static 'images/logo.png' %}" alt="" class="ui image" />
+                </a>
+            </div>
+            <div class="item">
+                <form class="ui icon input" action="{% url 'search' %}">
+                  <input class="prompt" placeholder="搜索您感兴趣的内容..." type="text" name="q" value="{{ q }}">
+                  <i class="search icon"></i>
+                </form>
+            </div>
+            <a class="item">
+                <img src="{% static 'images/question_icon.png' %}" alt="" class="ui image" />
+                <span class="nav text" onclick="$('.ui.modal').modal('show')">提问</span>
+            </a>
+            <a class="item" href="{% url 'home' %}">
+                <img src="{% static 'images/read_icon.png' %}" alt="" class="ui image" />
+                <span class="nav text">阅读</span>
+            </a>
+            <a class="item" href="{% url 'answer' %}">
+                <img src="{% static 'images/answer_icon.png' %}" alt="" class="ui image" />
+                <span class="nav text">回答</span>
+            </a>
+
+            {% if request.user.is_authenticated %}
+            <div class="right menu">
+                <a class="item" href="{% url 'profile' %}" >
+                    <img src="/uploads/{{ request.user.profile.avatar }}" alt="" class="ui image" />
+                    <span class="nav text"> {{ request.user.profile.name }}</span>
+                </a>
+            </div>
+            {% else %}
+            <div class="right menu">
+                <a class="item" href="{% url 'login' %}" >
+                    <span class="nav text"> 登录</span>
+                </a>
+
+                <a class="item" href="{% url 'register' %}" >
+                    <span class="nav text"> 注册 </span>
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- 内容部分开始 -->
+        <div class="ui basic segment" style="margin-bottom:0px;padding-bottom:0px;">
+          <div class="ui grid">
+            <div class="three wide column"></div>
+            <!-- 空格 -->
+            <div class="seven wide column">
+              <div class="on the line">
+                <span class="active item all searching-2" style="color:red">{{ q }}</span>
+                <span class="active item all searching">
+                  的搜索结果
+                </span>
+              </div>
+
+              <!-- 线上的内容 -->
+              <div class="ui divider" style="margin-bottom:0px"></div>
+
+              {% for answer in answers %}
+              <div class="ui items" style="margin-bottom:0px; margin-top:10px;">
+                <div class="item">
+                  <div class="header" style="color:#c33825;font-size:14px;">
+                    <button class="compact ui button" style="width:38px;height:24px;padding:0 0 0 0px;">
+                      <span style="color:#7093c2">{{ answer.like_counts }}</span>
+                    </button>
+                  </div>
+                  <div class="content" style="margin-left:40px;">
+                    <div class="header" style="color:#2e5e9f;font-size:14px;">
+                      {{ answer.question.title }}
+                    </div>
+                    <div class="meta">
+                      <span style="font-weight:bold;color:#000000;">{{ answer.author.name }}</span>
+                      <span style="color:#BFBFBF">{{ answer.author.desc }}</span>
+                    </div>
+
+                    <div class="ui basic segment-p">
+                      {{ answer.content }}
+                      <a href="{% url 'detail' answer.question.id %}" style="fort-size:12px;line-height:1.83">显示全部</a></p>
+                    </div>
+
+                    <div class="extra">
+                      <div class="ui image">
+                        <img src="{% static 'images/comment_icon.png' %}">
+                      </div>
+                        <span>{{ answer.comment_counts }}条评论</span>
+                    </div>
+
+                    </div>
+                  </div>
+                  <div class="ui divider"></div>
+              </div>
+              {% endfor %}
+
+              <div class="ui button" tabindex="0" style="color:#225599;width:633px;height:35px;margin-left:0px;margin-top:10px;margin-bottom:0px;background-color:#eff6fa;">
+                <div class="visible content">加载更多</div>
+              </div>
+
+            <div class="six wide column"></div>
+            <!-- 空格 -->
+          </div>
+        </div>
+        <!-- 内容部分结束 -->
+        <!-- 网页footer部分开始 -->
+            <div class="ui basic segment footer">
+              <div class="ui divider" style="width:960px;height:3px;"></div>
+              <div class="ui three column grid">
+                <div class="column">
+                  <div class="footer1">Developed by Mugglecoding team</div>
+                </div>
+                <div class="column">
+                  <div class="footer2">关于我们 . 加入我们 . 联系我们</div>
+                </div>
+                <div class="column">
+                  <div class="footer3">京ICP备15047012号-2</div>
+                </div>
+              </div>
+            </div>
+
+        <!-- 网页footer部分结束 -->
+      </body>
+    </html>
+
+
+
+
+
+
+  </body>
+</html>

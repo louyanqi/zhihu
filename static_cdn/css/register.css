@@ -1,0 +1,41 @@
+body{
+    width: 1366px;
+    height: 900px;
+    background-color: #f7fafc;
+    font-family: SourceHanSansSC;
+    font-size: 20px;
+    font-weight: bold;
+    font-style: normal;
+    font-stretch: normal;
+}
+.ui.vertical > a{
+    width: 44px;
+    height: 33px;
+    font-family: SourceHanSansSC-Normal;
+    font-size: 22px;
+    font-weight: normal;
+    font-style: normal;
+    font-stretch: normal;
+    color: #2f364a;
+    color: var(--dark);
+    margin-right: 49px;
+}
+.button.text > button{
+    width: 325px;
+    height: 50px;
+    border-radius: 3px;
+    background-color: #3e78ad;
+    box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.5);
+    border: solid 1px #3a66ad;
+    margin-left: 50px;
+}
+input{
+    border:1px solid rgb(227, 229, 232);
+    font-family: SourceHanSansSC-Normal;
+    font-size: 18px;
+    font-weight: normal;
+    font-style: normal;
+    font-stretch: normal;
+    color: #d8d8d8;
+    padding-left: 16px;
+}

@@ -1,0 +1,25 @@
+.ui.borderless.menu.modal-menu {
+	background-color: rgb(46,54,74);
+    border-bottom-right-radius: 0rem !important;
+    border-bottom-left-radius: 0rem !important;
+    border-top-left-radius: 1rem !important;
+    border-top-right-radius: 1rem !important;
+    box-shadow: 0px 2px 3px #888888;
+}
+
+
+.ui.segments.modal {
+	border-top-left-radius: 1rem !important;
+    border-top-right-radius: 1rem !important;
+    border: 0px !important;
+    width: 500px;
+    height: 470px;
+    margin-top: 120px;
+    background-color: white;
+    position: absolute;
+    left: 63%;
+}
+
+.ui.dimmer {
+	background-color: rgba(0, 0, 0, 0.2) !important;
+}

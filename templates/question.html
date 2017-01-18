@@ -1,0 +1,190 @@
+{% load static%}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>问题</title>
+    <link rel="stylesheet" href="{% static 'css/home.css' %}" media="screen" title="no title" charset="utf-8">
+    {% include 'css_js.html' %}
+</head>
+<body id="app">
+    <div id="home-page" style="display: none">
+    {% include 'top_nav.html' %}
+    <div class="ui basic segment container" style="top: 35px">
+        <div class="on the line" style="margin: 50px 290px 16px 0px;">
+            <span class="active item all question">
+              全部问题
+            </span>
+        </div>
+        <div class="ui divider"></div>
+        <button v-for="topic in topics" class="ui basic circular button" style="height:24px;padding:5px;border: 1px">
+            <span v-on:click="sendTopic(topic)" style="color: #259;font-weight: normal">[[ topic.name ]]</span>
+        </button>
+        <div class="ui divider"></div>
+        <div v-for="question in questions" class="ui items" style="margin: 0">
+            <div class="item">
+                <div class="content" style="padding-left:10px;">
+                    <div>
+                        <img class="right floated mini ui image" style="height: 30px;width: 30px" src="[[question.author.avatar]]">
+                        <div class="meta">
+                            <a href="/profile/[[question.author.id]]/" style="font-weight:bold;color:#000000;">[[ question.author.name ]],</a>
+                            <span style="color:#BFBFBF;font-size: 13px">[[ question.author.desc ]]</span>
+                        </div>
+                    </div>
+                    <a href="/question/[[question.id]]/" class="header" style="color:#2e5e9f;font-size:14px;margin-top: 8px">
+                        [[ question.title ]]
+                    </a>
+                    <p style="font-size: 13px;margin-top: 5px">
+                        [[ question.desc ]]
+                    </p>
+                </div>
+            </div>
+            <div class="ui divider"></div>
+        </div>
+        <div class="ui long button">
+            <div class="header item">
+                <a v-on:click="loadMoreQuestion">[[moreOrNot]]</a>
+            </div>
+        </div>
+    </div>
+    {% include 'footer.html' %}
+    </div>
+    <script>
+        Vue.config.delimiters = ["[[", "]]"];
+        vm = new Vue({
+            el: '#app',
+            data:{
+                moreOrNot:'加载更多',
+                questions:[],
+                user_info:'',
+                login_already:false,
+                login_not:false,
+                topics:[],
+                topicChoice: '首页',
+                question:{
+                    title:'',
+                    desc: '',
+                    topic:''
+                }
+            },
+            methods:{
+                addQuestionBtn:function () {
+                    var self=this;
+                    if (self.user_info==''){
+                        return $('#register-modal').modal('show')
+                    }else{
+                        return $('#question-modal').modal('show');
+                    }
+                },
+                ifLogin:function () {
+                    var self=this;
+                    if (self.user_info==''){
+                        return $('#register-modal').modal('show')
+                    }
+                },
+                addQuestion:function () {
+                    var self = this;
+                    reqwest({
+                        url: '/api/questions/',
+                        type: 'json',
+                        method: 'post',
+                        headers: Cookies.get('token')?{'Authorization': 'Token ' + Cookies.get('token')}:{},
+                        data:{
+                            title:self.question.title,
+                            desc: self.question.desc,
+                            topic:self.question.topic
+                        },
+                        success:function () {
+                            location.onload()
+                        }
+                    })
+                },
+                getQuestion:function () {
+                    var self = this;
+                    reqwest({
+                        url: '/api/only_questions/',
+                        type: 'json',
+                        headers: Cookies.get('token')?{'Authorization': 'Token ' + Cookies.get('token')}:{},
+                        success:function (resp) {
+                            self.questions = resp;
+                            if(resp.length<10){
+                                self.moreOrNot = '没有了'
+                            }
+                        }
+                    })
+                },
+                loadMoreQuestion:function () {
+                    var self = this;
+                    reqwest({
+                        url: '/api/only_questions?p=' + self.questions.length,
+                        type: 'json',
+                        headers: Cookies.get('token')?{'Authorization': 'Token ' + Cookies.get('token')}:{},
+                        success:function (resp) {
+                            before_len = self.questions.length;
+                            console.log(before_len);
+                            for(a in resp){
+                                self.questions.push(resp[a])
+                            }
+                            after_len = self.questions.length;
+                            console.log(after_len);
+                            if (after_len-before_len<5){
+                                self.moreOrNot = '没有了'
+                            }
+                        }
+                    })
+                },
+                getTopic:function () {
+                    var self = this;
+                    reqwest({
+                        url: '/api/topics/',
+                        type: 'json',
+                        headers: Cookies.get('token')?{'Authorization': 'Token ' + Cookies.get('token')}:{},
+                        success:function (resp) {
+                            self.topics = resp
+                        }
+                    })
+                },
+                sendTopic:function (topic) {
+                    var self = this;
+                    reqwest({
+                        url: '/api/only_questions?topic=' + topic.name,
+                        type: 'json',
+                        success:function (resp) {
+                            self.questions = resp
+                        }
+                    })
+                },
+                request_user:function () {
+                var self = this;
+                reqwest({
+                    url: '/api/users/now/',
+                    type: 'json',
+                    headers: Cookies.get('token')?{'Authorization': 'Token ' + Cookies.get('token')}:{},
+                    success:function (resp) {
+                        self.user_info = resp;
+                        self.login_already = true
+                        },
+                    error:function (err) {
+                        json_msg = JSON.parse(err.response);
+                        self.login_not = true
+                        }
+                    })
+                },
+                logOut:function () {
+                    Cookies.remove('token');
+                    location.reload()
+                },
+                displayBody:function () {
+                    document.querySelector('#home-page').style.cssText = "display:"
+                }
+            },
+            ready:function () {
+                this.request_user();
+                this.getTopic();
+                this.getQuestion();
+                this.displayBody()
+            }
+        })
+    </script>
+</body>
+</html>

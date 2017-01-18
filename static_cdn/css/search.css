@@ -1,0 +1,67 @@
+/*body部分*/
+body {
+    width: 1449px;
+}
+/*菜单部分开始*/
+.ui.inverted.top.fixed.menu.borderless.menu {
+    height: 46px;
+    width: 1449px；
+}
+.header.item.logo > .ui.image{
+    margin:0 0 0 239px;
+}
+.right.menu.personal.and.name{
+    margin:0 200px 0 300px;
+    width: 200px;
+    color: #2f364a;
+}
+/*菜单部分结束*/
+/*内容部分*/
+.on.the.line{
+  margin: 50px 290px 16px 0px;
+}
+.active.item.all.researching{
+  width: 28px;
+  height: 20px;
+  font-size: 14px;
+  font-weight: normal;
+  font-style: normal;
+  font-stretch: normal;
+  color: #4a4a4a;
+}
+.active.item.all.researching-2{
+  width: 28px;
+  height: 20px;
+  font-size: 14px;
+  font-weight: bold;
+  font-style: normal;
+  font-stretch: normal;
+  color: #4a4a4a;
+}
+
+/*footer部分*/
+.ui.basic.segment.footer{
+  width:100%;
+  height:56px;
+  padding-left: 236px;
+  padding-right: 220px;
+  border: none;
+  color: #666666;
+  margin-top: 0px;
+  padding-top: 300px;
+}
+.footer1{
+  color: #979797;
+  margin-left: 0px;
+  margin-top: 0px;
+}
+.footer2{
+  color: #979797;
+  margin-left: 100px;
+  margin-top: 0px;
+}
+.footer3{
+  color: #979797;
+  margin-left: 140px;
+  margin-top: 0px;
+}

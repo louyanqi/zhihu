@@ -1,0 +1,11 @@
+body{
+  background-color: rgb(247, 250, 252);
+}
+
+.ui.image.logo{
+  width: 200px;
+  position: relative;
+  left: 50%;
+  transform: translate(-50%,0%);
+}
+

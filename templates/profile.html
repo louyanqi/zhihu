@@ -1,0 +1,453 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>个人中心页</title>
+    <link rel="stylesheet" href="{% static 'css/profile.css' %}" media="screen" title="no title">
+    <link rel="stylesheet" href="{% static 'css/home.css' %}" media="screen" title="no title">
+    {% include 'css_js.html' %}
+</head>
+<body id="app">
+<div id="home-page" style="display: none">
+{% include 'top_nav.html' %}
+
+    <div class="ui basic container segment" style="height: 130px;">
+        <div class="ui image">
+            <img src="[[visit_user.profile.avatar ]]" style="width:100px;height:100px" />
+        </div>
+        <h3 id="user-name">
+            [[visit_user.username]]
+            <span id="user-desc">[[visit_user.profile.desc ]]</span>
+        </h3>
+        <a id="editButton" href="/profile/[[visit_user.id]]/edit/" class="ui blue basic button" style="float: right;display: none">修改资料</a>
+    </div>
+    <div class="ui basic segment container">
+        <div class="ui secondary pointing menu">
+            <a v-on:click="userLike" id="user_like" class="item [[like_active]]">
+                赞过
+            </a>
+            <a v-on:click="userAsk" id="user_ask" class="item [[ask_active]]">
+                提问
+            </a>
+            <a v-on:click="userAnswer" id="user_answer" class="item [[answer_active]]">
+                回答
+            </a>
+        </div>
+        <div class="ui segment">
+            <!--喜欢的和回答的-->
+            <div v-if="user_answer_show" v-for="answer in like_answers" class="item">
+                <div class="ui small image" style="position: absolute;width: 40px">
+                    <img src="[[answer.author.avatar]]" style="width:37px;height:37px">
+                    <div class="user_like" v-if="!answer.show_all_content">
+                        <button v-on:click="answer.show_all_content=!answer.show_all_content" class="ui icon button" style="position:relative;background-color:#eff6fa;height:24px;width:37px;left:-13px;color: #698ebf;font-size:12px;font-weight: bold;">
+                                <span id="close_like_count">[[ answer.like_counts ]]</span>
+                        </button>
+                    </div>
+                    <div class="user-vote" v-if="answer.show_all_content">
+                        <div class="user-like" v-on:click="userVote(answer)">
+                            <button style="left: 45%" class="ui icon button up [[answer.like_or]]" type="submit" name="button">
+                                <i style="left: 45%" class="ui caret up icon"></i>
+                                <div style="left: 45%" id="user_like_counts">[[ answer.like_counts ]]</div>
+                            </button>
+                        </div>
+
+                        <div class="user-dislike">
+                            <button class="ui icon button down" type="submit" name="button">
+                                <i style="left: 45%;bottom: 0" class="ui caret down icon"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="content" style="display:inline-block;margin-left: 50px;">
+                    <a id="question-title" class="header" style="font-size:15px;color:#225599;" href="/question/[[answer.question.id]]/answer/[[answer.id]]">
+                        [[ answer.question.title ]]
+                    </a>
+                    <div class="meta">
+                        <a id="username" href="/profile/[[answer.author.id]]" style="font-weight:bold;">[[answer.author.name ]]</a>
+                        <span id="user-desc" style="color:grey">[[ answer.author.desc ]]</span>
+                    </div>
+                    <div v-if="!answer.show_all_content" class="description">
+                        <p style="font-size:13px;line-height:1.69;font-stretch: normal;">
+                        [[ answer.content | limitBy 150 ]]
+                        <a style="cursor: pointer;" id="show-all-content-a" v-on:click="answer.show_all_content=!answer.show_all_content">显示全部</a></p>
+                    </div>
+                    <div v-if="answer.show_all_content" class="description" style="margin-top: 5px">
+                        <p style="font-size:13px;line-height:1.69;font-stretch: normal;">
+                        [[ answer.content ]]
+                        <a style="cursor: pointer;" id="show-all-content-a" v-on:click="answer.show_all_content=!answer.show_all_content">收起</a>
+                    </div>
+                    <div class="extra">
+                        <i class="comment icon" style="color: #8c8c8c"></i>
+                        <a id="comment-num-a" v-if="answer.comment_counts==0" v-show="!answer.show_all_comments" v-on:click="getComment(answer)" style="font-size:13px;">添加评论</a>
+                        <a id="comment-num-a" v-show="answer.show_all_comments" v-on:click="showAllCommentsSwitch(answer)">收起</a>
+                        <a id="comment-num-a" v-on:click="getComment(answer)"  v-if="!answer.comment_counts==0">[[ answer.comment_counts ]]条评论</a>
+                    </div>
+                    <div v-if="answer.show_all_comments" style="box-sizing: border-box;padding: 20px;width: 500px;border: 1px solid #ddd;border-radius: 5px">
+                            <div class="ui comments">
+                              <div v-for="comment in comments" class="comment">
+                                <a class="avatar">
+                                  <img src="[[comment.author.avatar]]">
+                                </a>
+                                <div class="content">
+                                  <a id="username" href="/profile/[[comment.author.id]]">[[comment.author.name]]</a>
+                                  <div class="metadata">
+                                    <div class="date">[[comment.create_time]]</div>
+                                  </div>
+                                  <div class="text">
+                                    [[comment.content]]
+                                  </div>
+                                  <div v-on:click="ifLogin" class="actions" v-on:click="commentReplyInput(comment)">
+                                    <a class="reply active" style="color: #999">回复</a>
+                                  </div>
+                                  <form v-show="comment.comment_reply_input" class="ui reply form">
+                                    <div class="field">
+                                      <input>
+                                    </div>
+                                    <div v-on:click="commentReplyInput(comment)" class="ui tiny button" style="background-color: white;color: #999;margin-left: 68%;">
+                                      取消
+                                    </div>
+                                    <div class="ui tiny button" style="background-color: #0D6EB8;color: white;float: right">
+                                      回复
+                                    </div>
+                                  </form>
+                                </div>
+                              <div class="ui divider"></div>
+                              </div>
+                                <!--评论表单-->
+                              <form class="ui form">
+                                <div v-on:click="ifLogin" class="field">
+                                  <input v-model="comment_content" placeholder="写下你的评论..."></input>
+                                </div>
+                                <div v-on:click="comment_content=''" class="ui tiny button" style="background-color: white;color: #999;margin-left: 71%;">
+                                  取消
+                                </div>
+                                <div v-on:click="addComment(answer)" class="ui tiny button" style="background-color: #0D6EB8;color: white;float: right">
+                                  评论
+                                </div>
+                              </form>
+                            </div>
+                        </div>
+                </div>
+                <div class="ui divider" style="color: #f0f2f7;"></div>
+
+            </div>
+            <!--提问的-->
+            <div v-if="user_question_show" id="question" v-for="question in user_asks" class="ui items">
+                <div class="item">
+                    <div class="content" style="padding-left:10px;">
+                        <div>
+                            <img class="right floated mini ui image" style="height: 30px;width: 30px" src="[[question.author.avatar]]">
+                            <div class="meta">
+                                <a href="/profile/[[question.author.id]]/" style="font-weight:bold;color:#000000;">[[ question.author.name ]],</a>
+                                <span style="color:#BFBFBF;font-size: 13px">[[ question.author.desc ]]</span>
+                            </div>
+                        </div>
+                        <a href="/question/[[question.id]]/" class="header" style="color:#2e5e9f;font-size:14px;margin-top: 8px">
+                            [[ question.title ]]
+                        </a>
+                        <p style="font-size: 13px;margin-top: 5px">
+                            [[ question.desc ]]
+                        </p>
+                    </div>
+                </div>
+                <div class="ui divider"></div>
+            </div>
+            <div v-if="user_answer_show" class="ui long button">
+                <div class="header item">
+                    <a v-on:click="loadMoreAnswer">[[amoreOrNot]]</a>
+                </div>
+            </div>
+            <div v-if="user_question_show" class="ui long button">
+                <div class="header item">
+                    <a v-on:click="loadMoreQuestion">[[qmoreOrNot]]</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% include 'footer.html' %}
+</div>
+    <script>
+        Vue.config.delimiters = ["[[", "]]"];
+        vm = new Vue({
+            el: '#app',
+            data:{
+                amoreOrNot:'加载更多',
+                qmoreOrNot:'加载更多',
+                user_info:'',
+                visit_user:'',
+                login_not:false,
+                login_already:false,
+                question:{
+                    title:'',
+                    desc: '',
+                    topic:''
+                },
+                like_answers:[],
+                user_asks:[],
+                user_answer_show:true,
+                user_question_show:false,
+                like_active: '',
+                ask_active:'',
+                answer_active:''
+            },
+            methods:{
+                addQuestionBtn:function () {
+                    var self=this;
+                    if (self.user_info==''){
+                        return $('#register-modal').modal('show')
+                    }else{
+                        return $('#question-modal').modal('show');
+                    }
+                },
+                ifLogin:function () {
+                    var self=this;
+                    console.log(self.user_info);
+                    if (self.user_info==''){
+                        return $('#register-modal').modal('show')
+                    }
+                },
+                addQuestion:function () {
+                    var self = this;
+                        reqwest({
+                        url: '/api/questions/',
+                        type: 'json',
+                        method: 'post',
+                        headers: Cookies.get('token')?{'Authorization': 'Token ' + Cookies.get('token')}:{},
+                        data:{
+                            title:self.question.title,
+                            desc: self.question.desc,
+                            topic:self.question.topic
+                        },
+                        success:function () {
+                            location.onload()
+                        }
+                    })
+                },
+                getUser:function () {
+                    var self = this;
+                    reqwest({
+                        url:'/api/user/' + {{ user_id }} +'/',
+                        type: 'json',
+                        success:function (resp) {
+                            self.visit_user = resp;
+                            self.userLike();
+                        }
+                    })
+                },
+                userLike:function () {
+                    var self = this;
+                    reqwest({
+                        url: '/api/answers?user_id=' + self.visit_user.id,
+                        type: 'json',
+                        success:function (resp) {
+                            for (r in resp) {
+                                resp[r].show_all_comments = false;
+                            }
+                            if(resp.length<10){
+                                self.amoreOrNot = '没有了'
+                            }
+                            self.like_answers = resp;
+                            self.user_answer_show = true;
+                            self.user_question_show = false;
+                            self.like_active = 'active';
+                            self.ask_active = '';
+                            self.answer_active = ''
+                        }
+                    });
+                },
+                userAsk:function () {
+                    var self = this;
+                    reqwest({
+                        url: '/api/only_questions?user_id=' + self.visit_user.id,
+                        type: 'json',
+                        headers: Cookies.get('token')?{'Authorization': 'Token ' + Cookies.get('token')}:{},
+                        success:function (resp) {
+                            self.user_asks = resp;
+                            self.user_answer_show = false;
+                            self.user_question_show = true;
+                            self.like_active = '';
+                            self.ask_active = 'active';
+                            self.answer_active = '';
+                            if(resp.length<10){
+                                self.moreOrNot = '没有了'
+                            }
+                        }
+                    })
+                },
+                userAnswer:function () {
+                    var self = this;
+                    reqwest({
+                        url : '/api/answers?user_answer_id=' + self.visit_user.id,
+                        type: 'json',
+                        success:function (resp) {
+                            self.like_answers = resp;
+                            for (r in resp) {
+                                resp[r].show_all_comments = false;
+                            }
+                            if(resp.length<10){
+                                self.amoreOrNot = '没有了'
+                            }
+                            self.user_answer_show = true;
+                            self.user_question_show = false;
+                            self.like_active = '';
+                            self.ask_active = '';
+                            self.answer_active = 'active'
+                        }
+                    });
+                },
+                getComment:function (answer) {
+                    var self = this;
+                    reqwest({
+                        url: '/api/comments?answer_id=' + answer.id,
+                        type: 'json',
+                        headers: Cookies.get('token')?{'Authorization': 'Token ' + Cookies.get('token')}:{},
+                        success:function (resp) {
+                            self.comments = resp;
+                            answer.show_all_comments = true;
+                        }
+                    })
+                },
+                loadMoreAnswer:function () {
+                    var self = this;
+                    reqwest({
+                        url: '/api/answers?p=' + self.answers.length,
+                        type: 'json',
+                        headers: Cookies.get('token')?{'Authorization': 'Token ' + Cookies.get('token')}:{},
+                        success:function (resp) {
+                            for (r in resp) {
+                                resp[r].show_all_comments = false
+                            }
+                            before_len = self.answers.length;
+                            for(a in resp){
+                                self.answers.push(resp[a])
+                            }
+                            after_len = self.answers.length;
+                            if (after_len-before_len<5){
+                                self.amoreOrNot = '没有了'
+                            }
+                        }
+                    })
+                },
+                loadMoreQuestion:function () {
+                    var self = this;
+                    reqwest({
+                        url: '/api/only_questions?p=' + self.user_asks.length,
+                        type: 'json',
+                        headers: Cookies.get('token')?{'Authorization': 'Token ' + Cookies.get('token')}:{},
+                        success:function (resp) {
+                            before_len = self.user_asks.length;
+                            console.log(before_len);
+                            for(a in resp){
+                                self.user_asks.push(resp[a])
+                            }
+                            after_len = self.user_asks.length;
+                            console.log(after_len);
+                            if (after_len-before_len<5){
+                                self.qmoreOrNot = '没有了'
+                            }
+                        }
+                    })
+                },
+                showAllContent:function (answer) {
+                    if (self.user_info!=undefined){
+                        this.userLikeOrNot(answer);
+                    }
+                    answer.show_all_content=!answer.show_all_content;
+                },
+                showAllCommentsSwitch:function (answer) {
+                    answer.show_all_comments = !answer.show_all_comments;
+                },
+                commentReplyInput:function (comment) {
+                    comment.comment_reply_input = !comment.comment_reply_input
+                },
+                addComment:function (answer) {
+                    var self = this;
+                    reqwest({
+                        url: '/api/comments/',
+                        method: 'post',
+                        type: 'json',
+                        headers: Cookies.get('token')?{'Authorization': 'Token ' + Cookies.get('token')}:{},
+                        data:{
+                            content: self.comment_content,
+                            answer_id: answer.id
+                        },
+                        success:function () {
+                            self.getComment(answer);
+                            self.comment_content = ''
+                        }
+                    })
+                },
+                userVote:function (answer) {
+                    var self = this;
+                    if (self.user_info == ''){
+                        return $('#register-modal').modal('show')
+                    }else{
+                        reqwest({
+                            url:'/api/user_vote/'+ answer.id + '/' + self.user_info.id +'?vote=like',
+                            type: 'json',
+                            headers: Cookies.get('token')?{'Authorization': 'Token ' + Cookies.get('token')}:{},
+                            success:function (resp) {
+                                answer.like_counts = resp.like_counts;
+                                answer.like_or = resp.like_or;
+                            }
+                        });
+                    }
+                },
+                userLikeOrNot:function (answer) {
+                    var self = this;
+                    var like_id_list = [];
+                    like_list = self.user_info.profile.user_vote_answer;
+                    for (i in like_list){
+                        like_id_list.push(like_list[i].id);
+                    }
+
+                    if (like_id_list.indexOf(answer.id) != -1){
+                        answer.like_or = 'like'
+                    }else {
+                        answer.like_or = 'normal'
+                    }
+                },
+                logOut:function () {
+                    Cookies.remove('token');
+                    location.reload()
+                },
+                displayEditBtn:function (id) {
+                    var self = this;
+                    console.log(id);
+                    console.log({{ user_id }});
+                    if(self.user_info.id == {{ user_id }}){
+                        document.querySelector('#editButton').style.cssText = "float: right;display: ";
+                    }
+                },
+                request_user:function () {
+                var self = this;
+                reqwest({
+                    url: '/api/users/now/',
+                    type: 'json',
+                    headers: Cookies.get('token')?{'Authorization': 'Token ' + Cookies.get('token')}:{},
+                    success:function (resp) {
+                        self.user_info = resp;
+                        self.login_already = true;
+                        self.displayEditBtn(self.user_info.id)
+                        },
+                    error:function (err) {
+                        json_msg = JSON.parse(err.response);
+                        self.login_not = true
+                    }
+                    })
+                },
+                displayBody:function () {
+                    document.querySelector('#home-page').style.cssText = "display:";
+                }
+            },
+             ready:function () {
+                 this.request_user();
+                 this.getUser();
+                 this.displayEditBtn();
+                 this.displayBody();
+            }
+        })
+    </script>
+</body>
+</html>

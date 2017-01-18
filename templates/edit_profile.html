@@ -1,0 +1,142 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>编辑个人资料</title>
+    <link rel="stylesheet" href="{% static 'css/home.css' %}" media="screen" title="no title">
+    <link rel="stylesheet" href="{% static 'css/profile.css' %}" media="screen" title="no title">
+    {% include 'css_js.html' %}
+</head>
+<body id="app">
+<div id="home-page" style="display: none">
+{% include 'top_nav.html' %}
+    <div class="edit-success-message" style="display: none">
+      <p class="success-message">保存成功</p>
+    </div>
+    <div class="edit-err-message" style="display: none">
+      <p class="err-message">[[err_msg]]</p>
+    </div>
+    <div class="ui basic container segment" style="width: 500px;">
+        <table>
+            <tbody>
+                <tr>
+                    <td><img src="[[user_info.profile.avatar ]]" style="width:100px;height:100px" /></td>
+                    <td>
+                        <form method="post" enctype="multipart/form-data" action="/profile/[[user_info.id]]/edit/">
+
+                            <input id="id_avatar" name="avatar" type="file">
+                            {% csrf_token %}
+                            <button class="ui basic button" type="submit">修改头像</button>
+                        </form>
+                    </td>
+                </tr>
+                <tr>
+                    <td>名字</td>
+                    <td><div class="ui input"><input v-model="user_name" type="text" value="[[user_name]]"></div></td>
+                </tr>
+                <tr>
+                    <td>一句话介绍</td>
+                    <td><div class="ui input"><input v-model="user_desc" type="text" value="[[user_desc]]"></div></td>
+                </tr>
+            </tbody>
+        </table>
+        <button v-on:click="editProfile" style="margin-top: 25px" class="ui inverted blue button">保存</button>
+
+    </div>
+{% include 'footer.html' %}
+</div>
+    <script>
+        Vue.config.delimiters = ["[[", "]]"];
+        vm = new Vue({
+            el: '#app',
+            data:{
+                err_msg:'',
+                user_name: '',
+                user_desc: '',
+                user_info:'',
+                login_not:false,
+                login_already:false,
+                question:{
+                    title:'',
+                    desc: '',
+                    topic:''
+                }
+            },
+            methods:{
+                editProfile:function () {
+                    var self = this;
+                    reqwest({
+                        url: '/api/edit_profile/' + self.user_info.id + '/',
+                        type: 'json',
+                        method: 'post',
+                        data:{
+                            name: self.user_name,
+                            desc: self.user_desc
+                        },
+                        success:function (resp) {
+                            document.querySelector('.edit-success-message').style.cssText = "display:";
+                            document.querySelector('.edit-err-message').style.cssText = "display:none";
+                        },
+                        error:function (err) {
+                            message = err.response;
+                            json_msg = JSON.parse(message);
+                            self.err_msg = json_msg.msg;
+                            document.querySelector('.edit-success-message').style.cssText = "display:none";
+                            document.querySelector('.edit-err-message').style.cssText = "display:";
+                        }
+                    })
+                },
+                addQuestion:function () {
+                    var self = this;
+                    reqwest({
+                        url: '/api/questions/',
+                        type: 'json',
+                        method: 'post',
+                        headers: Cookies.get('token')?{'Authorization': 'Token ' + Cookies.get('token')}:{},
+                        data:{
+                            title:self.question.title,
+                            desc: self.question.desc,
+                            topic:self.question.topic
+                        },
+                        success:function () {
+                            location.onload()
+                        }
+                    })
+                },
+                logOut:function () {
+                    Cookies.remove('token');
+                    location.reload()
+                },
+                request_user:function () {
+                var self = this;
+                reqwest({
+                    url: '/api/users/now/',
+                    type: 'json',
+                    headers: Cookies.get('token')?{'Authorization': 'Token ' + Cookies.get('token')}:{},
+                    success:function (resp) {
+                        self.user_info = resp;
+                        self.user_name = resp.username;
+                        self.user_desc = resp.profile.desc;
+                        self.login_already = true;
+                        self.userLike();
+
+                        },
+                    error:function (err) {
+                        json_msg = JSON.parse(err.response);
+                        self.login_not = true
+                    }
+                    })
+                },
+                displayBody:function () {
+                    document.querySelector('#home-page').style.cssText = "display:";
+                }
+            },
+             ready:function () {
+                this.request_user();
+                this.displayBody();
+            }
+        })
+    </script>
+</body>
+</html>

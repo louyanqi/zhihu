@@ -1,0 +1,160 @@
+body {
+    width: 1449px;
+}
+
+.ui.inverted.top.fixed.menu.borderless.blue.menu {
+    height: 46px;
+    width: 1449px;
+    background-color:#2f364a;
+    box-shadow: 2px 2px 2px rgba(10, 10, 10, 0.46);
+}
+
+.ui.image.logo {
+    margin-left: 239px;
+}
+
+
+.Rectangle.answer {
+  width: 633px;
+  height: 263px;
+  position: relative;
+  left: 239px;
+  top: 71px;
+  border-radius: 5px;
+  background-color: #ffffff;
+  border: none;
+}
+
+
+
+.ui.basic.segment.avatar-logo{
+    width: 100px;
+    height: 100px;
+    position: relative;
+    left: 13px;
+    top: 12px;
+}
+
+.ui.header.item{
+  position: absolute;
+  left: 135px;
+  top:-10px;
+}
+
+.magua {
+    width: 126px;
+    height: 27px;
+    position: absolute;
+    left: 135px;
+    top:20px;
+}
+
+.ui.vertical.segment.answer-column{
+    padding-left: 13px;
+    padding-right: 13px;
+}
+
+
+.ui.basic.segment.answer-column{
+    width: 38px;
+    height: 44px;
+    background-color: #eff6fa;
+    margin-left: 13px;
+    margin-right: 13px;
+    padding-top:3px;
+    padding-left: 6px;
+    padding-right: 1px;
+    padding-bottom: 3px;
+    font-weight: bold;
+    border-radius: 5px;
+}
+
+.ui.basic.segment.question-column{
+    width: 38px;
+    height: 44px;
+    background-color: #dddddd;
+    margin-left: 13px;
+    margin-right: 13px;
+    padding-top:3px;
+    padding-left: 1px;
+    padding-right: 1px;
+    padding-bottom: 3px;
+    font-weight: bold;
+    border-radius: 5px;
+}
+
+.right.menu.personal-detail{
+    margin-left: 300px;
+    margin-right: 200px;
+    width: 200px;
+}
+
+.ui.segment.container-bottom{
+    width: 100%;
+    height: 56px;
+    padding-left: 236px;
+    padding-right: 220px;
+    border: none;
+    color:#666666;
+    box-shadow: 0 0px;
+    margin-top: 50px;
+    position: relative;
+    transform: translate(0,100%);
+    top: 100%;
+}
+
+.column{
+    font-size: 13px;
+    font-weight: normal;
+    font-style: normal;
+    font-stretch: normal;
+    color: #979797;
+}
+
+
+.ui.vertical.segment.channel{
+    width: 210px;
+    height: 400px;
+    position:absolute;
+    top: 71px;
+    left: 932px;
+    padding: 0 0 0 0px;
+    border:none;
+}
+
+.channel-item{
+    font-size: 13px;
+    font-weight: normal;
+    margin-left: 8px;
+    color:#4a4a4a;
+}
+
+.Rectangle-11 {
+  width: 230px;
+  height: 35px;
+  border-radius: 3px;
+  background-color: #eff6fa;
+  position: relative;
+  left: -10px;
+
+  padding-top: 5px;
+  padding-bottom: 2px;
+  padding-left: 10px;
+}
+
+.Rectangle-7 {
+  width: 38px;
+  height: 24px;
+  border-radius: 3px;
+  background-color: #eff6fa;
+  padding-left: 6px;
+  margin-top: 5px;
+}
+
+.ui.long.button {
+  width: 633px;
+  height: 35px;
+  border-radius: 3px;
+  background-color: #eff6fa;
+  margin-bottom: 150    px;
+}

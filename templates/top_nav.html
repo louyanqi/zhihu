@@ -1,0 +1,57 @@
+{% load static %}
+<div class="top nav">
+    <div class="ui fixed borderless menu" style="left: 40px">
+        <div class="logo item">
+            <a href="{% url 'home' %}">
+                <span style="color: white;font-size: 35px;">Exchange</span>
+            </a>
+        </div>
+        <div class="item">
+            <form class="ui icon input" action="{% url 'search' %}">
+              <input class="prompt" placeholder="搜索您感兴趣的内容..." type="text" name="q">
+              <i class="search icon"></i>
+            </form>
+        </div>
+        <a v-on:click="addQuestionBtn" class="item">
+
+            <span class="nav text">提问</span>
+        </a>
+        <a class="item" href="{% url 'topic' %}">
+
+            <span class="nav text">话题</span>
+        </a>
+        <a class="item" href="{% url 'question' %}">
+
+            <span class="nav text">问题</span>
+        </a>
+        <div v-if="login_already">
+
+            <div class="dropdown" style="margin-left: 129px;margin-top: 3px">
+                <div style="height: 43px;width: 120px">
+                    <img style="width: 40px" src="[[user_info.profile.avatar]]" alt="" class="ui circular image" />
+                </div>
+                <div class="dropdown-content">
+                    <div><a style="font-size: 16px">[[user_info.username]]</a></div>
+                    <div><a href="/profile/[[user_info.id]]" style="font-size: 14px"><i class="ui user icon"></i>我的主页</a></div>
+                    <div><a href="#sign_out" v-on:click="logOut"  style="font-size: 14px"><i class="ui remove icon"></i>退出</a></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="right menu" v-if="login_not">
+            <a class="item" href="{% url 'login' %}" >
+                <span class="nav text"> 登录</span>
+            </a>
+            <a class="item" href="{% url 'register' %}" >
+                <span class="nav text"> 注册 </span>
+            </a>
+        </div>
+    </div>
+</div>
+<script>
+    $('#drop_down')
+  .dropdown({
+    on: 'hover'
+  })
+;
+</script>

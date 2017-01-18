@@ -1,0 +1,22 @@
+.ui.basic.segment.container {
+  width: 700px;
+  height: auto;
+  position: relative;
+  left: -8%;
+  top: 80px;
+  border-radius: 5px;
+  background-color: #ffffff;
+  border: none;
+}
+
+.user_like {
+  width: 38px;
+  height: 24px;
+  border-radius: 3px;
+  background-color: #eff6fa;
+  padding-left: 14px;
+  margin-top: 5px;
+}
+
+
+
