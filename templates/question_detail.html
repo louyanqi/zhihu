@@ -126,9 +126,9 @@
 
     <div class="ui form" style="width: 540px;height: 220px;left: 20%">
         <div v-on:click="ifLogin" class="field">
-            <textarea rows="5"></textarea>
+            <textarea v-model="answer_content" rows="5"></textarea>
         </div>
-        <div v-on:click="ifLogin" class="ui blue button" style="float: right">提交回答</div>
+        <div v-on:click="addAnswer" class="ui blue button" style="float: right">提交回答</div>
     </div>
 
     <!--正文结束-->

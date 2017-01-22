@@ -69,6 +69,7 @@
                     reqwest({
                         url: '/api/edit_profile/' + self.user_info.id + '/',
                         type: 'json',
+                        headers: Cookies.get('token')?{'Authorization': 'Token ' + Cookies.get('token')}:{},
                         method: 'post',
                         data:{
                             name: self.user_name,

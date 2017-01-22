@@ -4,7 +4,7 @@
     position: fixed;
     left: 0;
     top: 0;
-    background-color: #2f364a;
+    background-color: #0767c8;
     z-index: 1;
 }
 .ui.fixed.borderless.menu {
@@ -13,12 +13,10 @@
     position: relative;
     margin: 0 auto;
     clear: both;
-    background-color: #2f364a;
+    background-color: #0767c8;
     border: none;
 }
-.ui.fixed.borderless.menu > a:hover {
-    background-color: #19212e;
-}
+
 .logo.item {
     margin-left: -16px;
 }
@@ -31,13 +29,207 @@
     margin-left: -10px;
 }
 .nav.text {
-    color: #fff;
+    color: white;
     margin-left: 8px;
     font-size: 16px;
 }
-.right.menu > .item {
-    width: 119px;
-    height: 46px;
-    background-color: #19212e;
-    margin-top: -1px;
+
+
+#close_like_count{
+    position:absolute;
+    transform: translate(-50%,-50%);
+    font-weight: 500
 }
+
+.user-vote {
+    width: 48px;
+    height: 75px;
+    margin-top: 5px
+}
+
+.user-vote > .user-like{
+     margin-top: 5px
+}
+.user-vote > .user-like > .ui.icon.button.up{
+    background-color: #eff6fa;
+    width: 37px;
+    height: 44px;
+}
+.user-vote > .user-like > .ui.icon.button.up.like{
+    background-color: #698ebf;
+    width: 37px;
+    height: 44px;
+}
+.user-vote > .user-like > .ui.icon.button.up > .ui.caret.up.icon{
+    position: absolute;
+    transform: translate(-50%,-50%);
+    left: 50%;
+    top: 53px;
+    color: #698ebf
+}
+.user-vote > .user-like > .ui.icon.button.up.like > .ui.caret.up.icon{
+    position: absolute;
+    transform: translate(-50%,-50%);
+    left: 50%;
+    top: 53px;
+    color: #eff6fa
+}
+
+.user-vote > .user-like > .ui.icon.button.up > #user_like_counts{
+     position: absolute;
+    transform: translate(-50%,-50%);
+    left: 50%;
+    color: #698ebf;
+    top: 70px;
+    font-weight: 500
+}
+.user-vote > .user-like > .ui.icon.button.up.like > #user_like_counts{
+     position: absolute;
+    transform: translate(-50%,-50%);
+    left: 50%;
+    color: #eff6fa;
+    top: 70px;
+    font-weight: 500
+}
+
+.user-vote > .user-dislike{
+     margin-top: 5px
+}
+.user-vote > .user-dislike > .ui.icon.button.down{
+     background-color: #eff6fa;
+    width: 37px;
+    height: 24px
+}
+.user-vote > .user-dislike > .ui.icon.button.down > .ui.caret.down.icon{
+     position: absolute;
+    transform: translate(-50%,-50%);
+    left: 50%;
+    bottom: -78px;
+    color: #698ebf
+}
+
+/* 容器 <div> - 需要定位下拉内容 */
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+/* 下拉内容 (默认隐藏) */
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #0767c8;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+}
+
+/* 下拉菜单的链接 */
+.dropdown-content a {
+    color: white;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+}
+.dropdown-content>div{
+    border-bottom: 1px #1c66a0 solid;
+}
+
+
+/* 鼠标移上去后修改下拉菜单链接颜色 */
+.dropdown-content a:hover {background-color: #0665E9}
+
+/* 在鼠标移上去后显示下拉菜单 */
+.dropdown:hover .dropdown-content {
+    display: block;
+}
+
+#username{font-weight:bold;color: black;font-size: 14px}
+#username:hover{text-decoration:underline;}
+
+#user-desc{color: grey;font-size: 13px}
+
+#user-avatar{    height: 32px;
+    width: 32px;
+    position: relative;
+    right: -550px;
+    bottom: 30px;}
+
+#comment-num-a{font-size:13px;color: #999;cursor: pointer;}
+#comment-num-a:hover{text-decoration:underline;color: #259}
+
+#question-title:hover{text-decoration:underline;}
+
+/*加载更多按钮*/
+.ui.long.button {
+  width: 280px;
+  margin-left: 30%;
+  height: 35px;
+  border-radius: 3px;
+  background-color: #eff6fa;
+  margin-bottom: 15px;
+}
+
+
+/*提问框*/
+.ui.borderless.menu.modal-menu {
+	background-color: rgb(46,54,74);
+    border-bottom-right-radius: 0rem !important;
+    border-bottom-left-radius: 0rem !important;
+    border-top-left-radius: 1rem !important;
+    border-top-right-radius: 1rem !important;
+    box-shadow: 0px 2px 3px #888888;
+}
+.ui.segments.modal {
+	border-top-left-radius: 1rem !important;
+    border-top-right-radius: 1rem !important;
+    border: 0px !important;
+    width: 500px;
+    height: 470px;
+    margin-top: 120px;
+    background-color: white;
+    position: absolute;
+    left: 63%;
+}
+.ui.dimmer {
+	background-color: rgba(0, 0, 0, 0.2) !important;
+}
+
+/*话题按钮*/
+/*未选中状态*/
+.topic.button{
+    margin-right: 5px;
+    border-radius: 30px;
+    border: 1px solid #daecf5;
+    padding: 3px 5px;
+    cursor: pointer;
+}
+.topic.button>span{
+     color: #259;font-weight: normal
+}
+/*鼠标经过状态*/
+.topic.button:hover{
+    margin-right: 5px;
+    color: white;
+    background-color: #259;
+    border-radius: 30px;
+    border: 1px solid #259;
+    padding: 3px 5px;
+    cursor: pointer;
+}
+.topic.button:hover>span{
+    color: white;font-weight: normal
+}
+/*选择状态*/
+.topic.button.choose{
+    margin-right: 5px;
+    color: white;
+    background-color: #259;
+    border-radius: 30px;
+    border: 1px solid #259;
+    padding: 3px 5px;
+    cursor: pointer;
+}
+.topic.button.choose>span{
+     color: white;font-weight: normal
+}
+

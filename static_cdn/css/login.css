@@ -2,10 +2,62 @@ body{
   background-color: rgb(247, 250, 252);
 }
 
-.ui.image.logo{
-  width: 200px;
+#login-container{
+    width: 300px;
+    top: 54%;
+    left: 50%;
+    position: absolute;
+    transform: translate(-50%,-50%);"
+}
+
+#login-logo{
+    color: #0F88Eb;
+    font-size: 35px;
+    position: relative;
+    left: 59px;
+}
+
+.ui.two.item.text.menu{
+  width: 150px;
   position: relative;
   left: 50%;
   transform: translate(-50%,0%);
+  margin-top: 30px;
 }
 
+#login-form{;
+    height: 300px;
+}
+
+.ui.form > .field > #form-message{
+     position: absolute;
+    transform: translate(-50%,-50%);
+    top: 19px;
+    right: -65px;
+    color: #c33;
+    font-size: 14px;
+    width: 150px;
+    text-align: right;
+}
+
+.ui.form > .field > #form-message2{
+     position: absolute;
+    transform: translate(-50%,-50%);
+    top: 70px;
+    right: -65px;
+    color: #c33;
+    font-size: 14px;
+    width: 150px;
+    text-align: right;
+}
+
+.ui.form > .field > #form-message3{
+     position: absolute;
+    transform: translate(-50%,-50%);
+    top: 120px;
+    right: -65px;
+    color: #c33;
+    font-size: 14px;
+    width:150px;
+    text-align: right;
+}

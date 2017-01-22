@@ -1,6 +1,6 @@
 
 .ui.vertical.segment {
-    width: 960px;
+    width: 800px;
     clear: both;
     position: relative;
     margin-top: 50px;
@@ -8,24 +8,32 @@
     margin-right: auto;
     border: none;
 }
-.ui.container.user.segment {
-    width: 642px;
-    height: 130px;
-    float: left;
+
+#user-name{
+    margin-left: 130px;
+    margin-top: -80px;
+    color: #404040;
+    font-weight: 500;
+    font-size: 26px
 }
-.ui.header {
-    font-size: 20px;
-    margin-left: 120px;
-    margin-top: -102px;
+
+#user-name > #user-desc {
+    margin-left: 12px;
+    font-size: 18px;
+    white-space: nowrap;
 }
-.subtitle {
-    width: 500px;
+
+.ui.container.segment{
+    width: 800px;
+    left: -80px;
+    margin-top: 10px;
+}
+
+.ui.secondary.pointing.menu > .item{
     font-size: 16px;
-    color: #666;
-    margin-left: 120px;
-    position: relative;
-    top: -8px;
+    color: #404040;
 }
+
 .ex.change {
     display: none;
 }
@@ -54,31 +62,8 @@ a:hover > .user.change {
     color: #fff;
     display: inline-block;
 }
-.ui.container.segment{
-    width: 642px;
-    float: left;
-    margin-top: 10px;
-}
-.hd-head {
-    height: 34px;
-    width: 640px;
-    border-bottom: 1px solid #ddd;
-    clear: both;
-    line-height: inherit;
-    margin-left: -14px;
-}
-.hd-name {
-    font-size: 16px;
-    color: #666;
-    font-weight: 500;
-    margin-left: 14px;
-    display: inline;
-}
-.hd-num {
-    font-size: 16px;
-    color: #979797;
 
-}
+
 .hd-list {
     height: 60px;
     border-bottom: 1px dotted #eee;
@@ -157,9 +142,43 @@ a {
     color: #ccc;
     font-size: 13px;
 }
-.ft-l {
-    float: left;
+
+td{
+    width: 180px;
 }
-.ft-r {
-    float: right;
+tr{
+    border-bottom:1px solid #f0f0f0;
+    height: 90px
+}
+
+.edit-success-message{
+    position: absolute;
+    top: 52px;
+    left: 340px;
+    border: solid #0ebf0e 0.1em;
+    width: 400px;
+    height: 38px;
+    border-radius: 3px;
+}
+
+.edit-success-message > .success-message {
+    margin-left: 169px;
+    margin-top: 8px;
+    color:#0ebf0e ;
+}
+
+.edit-err-message{
+    position: absolute;
+    top: 52px;
+    left: 340px;
+    border: solid #DE533A 0.1em;
+    width: 400px;
+    height: 38px;
+    border-radius: 3px;
+}
+
+.edit-err-message > .err-message {
+    margin-left: 169px;
+    margin-top: 8px;
+    color:#DE533A ;
 }

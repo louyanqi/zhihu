@@ -134,7 +134,6 @@
                 moreOrNot:'加载更多',
                 answers:[],
                 topics:[],
-                topicChoice: '首页',
                 comments:[],
                 comment_input_show:true,
                 comment_show:false,
@@ -147,9 +146,17 @@
                     desc: '',
                     topic:''
                 },
-                vote_or:''
+                vote_or:'',
+                username:'',
+                password:'',
+                email:'',
+                username_err:'',
+                password_err:'',
+                email_err:'',
+                msgShow:false
             },
             methods:{
+                {#添加问题按钮 未登录弹出注册框#}
                 addQuestionBtn:function () {
                     var self=this;
                     if (self.user_info==''){
@@ -158,13 +165,14 @@
                         return $('#question-modal').modal('show');
                     }
                 },
+                {# 判断是否登录，未登录弹出注册框 #}
                 ifLogin:function () {
                     var self=this;
-                    console.log(self.user_info);
                     if (self.user_info==''){
                         return $('#register-modal').modal('show')
                     }
                 },
+                {# 添加问题 #}
                 addQuestion:function () {
                     var self = this;
                         reqwest({
@@ -177,8 +185,8 @@
                             desc: self.question.desc,
                             topic:self.question.topic
                         },
-                        success:function () {
-                            location.onload()
+                        success:function (resp) {
+                            window.location.href= '/question/'+resp.id+'/'
                         }
                     })
                 },
@@ -189,6 +197,7 @@
                         type: 'json',
                         headers: Cookies.get('token')?{'Authorization': 'Token ' + Cookies.get('token')}:{},
                         success:function (resp) {
+                            {# 为每个answer添加默认不显示评论 #}
                             for (r in resp) {
                                 resp[r].show_all_comments = false;
                             }
@@ -218,11 +227,15 @@
                             for (r in resp) {
                                 resp[r].show_all_comments = false
                             }
+                            {# 加载之前的answer数量 #}
                             before_len = self.answers.length;
+                            {# 新加载的answer push到列表中 #}
                             for(a in resp){
                                 self.answers.push(resp[a])
                             }
+                            {# 加载之后的数量 #}
                             after_len = self.answers.length;
+                            {# 默认每次加载5个，如果少于5个，即没有了 #}
                             if (after_len-before_len<5){
                                 self.moreOrNot = '没有了'
                             }
@@ -230,6 +243,8 @@
                     })
                 },
                 showAllContent:function (answer) {
+                    var self = this;
+                    {# 如果是登录状态，判断用户是否对其点赞 #}
                     if (self.user_info!=undefined){
                         this.userLikeOrNot(answer);
                     }
@@ -260,6 +275,7 @@
                 },
                 userVote:function (answer) {
                     var self = this;
+                    {# 判断登录 #}
                     if (self.user_info == ''){
                         return $('#register-modal').modal('show')
                     }else{
@@ -274,14 +290,16 @@
                         });
                     }
                 },
+                {# 判断用户是否点赞 #}
                 userLikeOrNot:function (answer) {
                     var self = this;
+                    {# 将用户所有点赞answer的id添加进列表 #}
                     var like_id_list = [];
                     like_list = self.user_info.profile.user_vote_answer;
                     for (i in like_list){
                         like_id_list.push(like_list[i].id);
                     }
-
+                    {# 判断该answer的id是否在列表中 #}
                     if (like_id_list.indexOf(answer.id) != -1){
                         answer.like_or = 'like'
                     }else {
@@ -292,6 +310,7 @@
                     Cookies.remove('token');
                     location.reload()
                 },
+                {# 预先加载，用户判断用户身份 #}
                 request_user:function () {
                     var self = this;
                     reqwest({
@@ -301,13 +320,86 @@
                         success:function (resp) {
                             self.user_info = resp;
                             self.login_already = true
-
                             },
                         error:function (err) {
                             json_msg = JSON.parse(err.response);
                             self.login_not = true
                         }
                     })
+                },
+                registerUser:function () {
+                    var self = this;
+                    var reg = /^\w+((-\w+)|(\.\w+))*\@[A-Za-z0-9]+((\.|-)[A-Za-z0-9]+)*\.[A-Za-z0-9]+$/;
+                    isok= reg.test(self.email);
+                    if (self.username==''){
+                        self.msgShow=true;self.username_err='请填写姓名';
+                        self.password_err='';self.email_err=''
+                    }else if(self.password==''){
+                        self.msgShow=true;self.password_err='请填写密码';
+                        self.email_err='';self.username_err='';
+                    }else if(self.email==''){
+                        self.msgShow=true;self.email_err='请填写邮箱地址';
+                        self.username_err='';self.password_err='';
+                    }else if(!isok){
+                        self.msgShow=true;self.email_err='请填写正确邮箱';
+                        self.username_err='';self.password_err='';
+                    }else{
+                            reqwest({
+                            url: '/api/register/',
+                            type: 'json',
+                            method: 'post',
+                            data:{
+                                username: self.username,
+                                password: self.password,
+                                email: self.email
+                            },
+                            success:function (resp) {
+                                $('#register-modal').modal('hide');
+                                $('#login-modal').modal('show');
+                            },
+                            error:function (err) {
+                                message = err.response;
+                                json_msg = JSON.parse(message);
+                                self.username_err = json_msg.username ? json_msg.username:'';
+                                self.password_err = json_msg.password_err ? json_msg.password_err:'';
+                                self.email_err = json_msg.email_err ? json_msg.email_err:'';
+                                self.msgShow = true;
+                            }
+                        })
+                    }
+                },
+                logIn:function () {
+                    var self = this;
+                    var reg = /^\w+((-\w+)|(\.\w+))*\@[A-Za-z0-9]+((\.|-)[A-Za-z0-9]+)*\.[A-Za-z0-9]+$/;
+                    isok= reg.test(self.email);
+                    if (self.email==''){
+                        self.msgShow=true;self.email_err='请填写邮箱地址';self.password_err='';
+                    }else if(self.password=='') {
+                        self.msgShow = true;
+                        self.password_err = '请填写密码';self.email_err = '';
+                    }else if(!isok){
+                        self.msgShow=true;self.email_err='请填写正确邮箱';self.password_err='';
+                    } else{
+                            reqwest({
+                            url : '/api/login/',
+                            type:'json',
+                            method:'post',
+                            data:{
+                                email: this.email,
+                                password: this.password
+                            },
+                            success:function (resp) {
+                                Cookies.set('token', resp.token,{ expires: 365});
+                                window.location.href = '/';
+                            },
+                            error:function (err) {
+                                message = err.response;
+                                json_msg = JSON.parse(message);
+                                self.email_err = json_msg.login_err;
+                                self.msgShow = true;
+                            }
+                        })
+                    }
                 },
                 displayBody:function () {
                     document.querySelector('#home-page').style.cssText = "display:"

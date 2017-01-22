@@ -222,7 +222,7 @@ def user_vote(request, answer_id, user_id, like_or='normal'):
 @api_view(['GET', 'POST'])
 @authentication_classes((TokenAuthentication,))
 def edit_profile(request, user_id):
-    if request.user.id == user_id:
+    if int(request.user.id) == int(user_id):
         profile = UserProfile.objects.get(belong_to_id=user_id)
         user = profile.belong_to
         if request.method == 'POST':
@@ -230,6 +230,8 @@ def edit_profile(request, user_id):
             new_name = data.get('name')
             new_desc = data.get('desc')
             if user.username == new_name:
+                profile.desc = new_desc
+                profile.save()
                 return Response(status=status.HTTP_200_OK)
             else:
                 exist = User.objects.filter(username=new_name)
