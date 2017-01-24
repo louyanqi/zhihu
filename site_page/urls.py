@@ -1,6 +1,6 @@
 from django.conf.urls import url
-from site_page.views import question_detail, home, index_login, profile, answer_detail, edit_profile
-from site_page.views import register, search, question, topic_page
+from site_page.views import question_detail, home, index_login, profile, answer_detail,\
+    edit_profile, register, question, topic_page
 
 
 urlpatterns = [
@@ -13,7 +13,7 @@ urlpatterns = [
     url(r'^profile/(?P<user_id>\d+)/$', profile, name="profile"),
     url(r'^profile/(?P<user_id>\d+)/edit/$', edit_profile, name="edit_profile"),
     url(r'^register/$', register, name="register"),
-    url(r'^search/$', search, name="search"),
+
 
 
 ]

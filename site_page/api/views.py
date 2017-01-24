@@ -2,14 +2,13 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view, authentication_classes
 from rest_framework.authentication import TokenAuthentication
 from site_page.models import User, UserProfile, Topic, Question, Answer, Comment, Vote
-from .serializers import (UserSerializer, UserProfileSerializer, QuestionSerializer,
+from .serializers import (UserSerializer, QuestionSerializer,
                           AnswerSerializer, TopicSerializer, CommentSerializer, OnlyQuestionSerializer,
                           UserLoginSerializer, UserCreateSerializer, )
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.generics import CreateAPIView
 from rest_framework.authtoken.models import Token
-from  rest_framework.serializers import ValidationError
 from django.core.exceptions import ObjectDoesNotExist
 
 
@@ -29,6 +28,7 @@ def user_info_detail(request, user_id):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
+# 用来判断当前用户身份，返回其信息
 @api_view(['GET'])
 @authentication_classes((TokenAuthentication,))
 def user_now(request):
@@ -65,6 +65,7 @@ def question(request):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
+# 下级没有answer的question，为节约加载
 @api_view(['GET', 'POST'])
 def only_question(request):
     p = request.GET.get('p')
@@ -89,6 +90,7 @@ def only_question(request):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
+# 问题页，问题为主导
 @api_view(['GET', 'POST'])
 @authentication_classes((TokenAuthentication,))
 def question_answer_home(request, id):

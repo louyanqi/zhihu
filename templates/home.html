@@ -245,7 +245,8 @@
                 showAllContent:function (answer) {
                     var self = this;
                     {# 如果是登录状态，判断用户是否对其点赞 #}
-                    if (self.user_info!=undefined){
+                    console.log(self.user_info)
+                    if (self.user_info!= ''&& self.user_info!=undefined){
                         this.userLikeOrNot(answer);
                     }
                     answer.show_all_content=!answer.show_all_content;

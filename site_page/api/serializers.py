@@ -1,5 +1,4 @@
-from rest_framework.serializers import (ModelSerializer, EmailField, HyperlinkedIdentityField,
-                                        SerializerMethodField,ValidationError, CharField)
+from rest_framework.serializers import (ModelSerializer, EmailField, ValidationError)
 from rest_framework import serializers
 from django.contrib.auth import authenticate
 from django.utils.translation import ugettext_lazy as _
@@ -79,6 +78,7 @@ class AnswerSerializer(ModelSerializer):
         depth = 1
 
 
+# 只序列化answer的id
 class AnswerForCommentSerializer(ModelSerializer):
     class Meta:
         model = Answer
@@ -134,6 +134,7 @@ class QuestionSerializer(ModelSerializer):
         fields = '__all__'
 
 
+# 只有question下级没有answer
 class OnlyQuestionSerializer(ModelSerializer):
 
     class Meta:

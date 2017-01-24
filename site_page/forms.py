@@ -8,5 +8,4 @@ class ProfileForm(forms.ModelForm):
         fields = ['avatar']
 
 
-class VoteForm(forms.Form):
-    vote = forms.CharField(required=True)
+

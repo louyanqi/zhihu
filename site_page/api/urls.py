@@ -10,7 +10,7 @@ urlpatterns = [
     url(r'^api/users/now/$', user_now),
     url(r'^api/questions/$', question),
     url(r'^api/only_questions/$', only_question),
-    url(r'^api/questions/(?P<id>\d+)/$', question_answer_home),
+    url(r'^api/questions/(?P<id>\d+)/$', question_answer_home),  #问题页
     url(r'^api/answers/$', answer),
     url(r'^api/topics/$', topic),
     url(r'^api/user_vote/(?P<answer_id>\d+)/(?P<user_id>\d+)/$', user_vote),

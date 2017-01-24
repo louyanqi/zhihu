@@ -8,6 +8,7 @@ class UserProfile(models.Model):
     email = models.EmailField(null=True)
     desc = models.CharField(null=True, blank=True, max_length=250)
     avatar = models.ImageField(upload_to='avatars', default='/avatars/default.png')
+    create_time = models.DateField(auto_now=True)
 
     def __str__(self):
         return self.name
@@ -15,6 +16,7 @@ class UserProfile(models.Model):
 
 class Topic(models.Model):
     name = models.CharField(null=True, blank=True, max_length=14)
+    create_time = models.DateField(auto_now=True)
 
     def __str__(self):
         return self.name
@@ -62,3 +64,7 @@ class Comment(models.Model):
 class Vote(models.Model):
     owner = models.ForeignKey(to=UserProfile)
     give_to = models.ForeignKey(to=Answer)
+    create_time = models.DateField(auto_now=True)
+
+    def __str__(self):
+        return self.owner.name

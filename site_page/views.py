@@ -2,8 +2,8 @@
 #-*- coding: utf-8 -*-
 from django.shortcuts import render, redirect
 
-from site_page.models import UserProfile, Answer, Topic, Question
-from site_page.forms import VoteForm, ProfileForm
+from site_page.models import UserProfile, Answer, Question
+from site_page.forms import ProfileForm
 from django.shortcuts import get_object_or_404
 
 
@@ -69,17 +69,6 @@ def register(request):
     context = {}
 
     return render(request, "register.html", context)
-
-
-def search(request):
-    context = {}
-    q = request.GET.get("q", "").strip()
-    if not q:
-        return redirect(to="home")
-    context["q"] = q
-    answers = Answer.objects.filter(content__contains=q)
-    context["answers"] = answers
-    return render(request, "search.html", context)
 
 
 def edit_profile(request, user_id):
