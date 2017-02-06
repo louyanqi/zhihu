@@ -14,7 +14,7 @@
 
     <div class="ui basic container segment" style="height: 130px;">
         <div class="ui image">
-            <img src="[[visit_user.profile.avatar ]]" style="width:100px;height:100px" />
+            <img :src="visit_user.profile.avatar" style="width:100px;height:100px" />
         </div>
         <h3 id="user-name">
             [[visit_user.username]]
@@ -36,9 +36,10 @@
         </div>
         <div class="ui segment">
             <!--喜欢的和回答的-->
-            <div v-if="user_answer_show" v-for="answer in like_answers" class="item">
+            <div class="items" v-if="user_answer_show">
+                <div v-for="answer in like_answers" class="item">
                 <div class="ui small image" style="position: absolute;width: 40px">
-                    <img src="[[answer.author.avatar]]" style="width:37px;height:37px">
+                    <img :src="answer.author.avatar" style="width:37px;height:37px">
                     <div class="user_like" v-if="!answer.show_all_content">
                         <button v-on:click="answer.show_all_content=!answer.show_all_content" class="ui icon button" style="position:relative;background-color:#eff6fa;height:24px;width:37px;left:-13px;color: #698ebf;font-size:12px;font-weight: bold;">
                                 <span id="close_like_count">[[ answer.like_counts ]]</span>
@@ -81,13 +82,13 @@
                         <i class="comment icon" style="color: #8c8c8c"></i>
                         <a id="comment-num-a" v-if="answer.comment_counts==0" v-show="!answer.show_all_comments" v-on:click="getComment(answer)" style="font-size:13px;">添加评论</a>
                         <a id="comment-num-a" v-show="answer.show_all_comments" v-on:click="showAllCommentsSwitch(answer)">收起</a>
-                        <a id="comment-num-a" v-on:click="getComment(answer)"  v-if="!answer.comment_counts==0">[[ answer.comment_counts ]]条评论</a>
+                        <a id="comment-num-a" v-on:click="getComment(answer)" v-show="!answer.show_all_comments"  v-if="!answer.comment_counts==0">[[ answer.comment_counts ]]条评论</a>
                     </div>
                     <div v-if="answer.show_all_comments" style="box-sizing: border-box;padding: 20px;width: 500px;border: 1px solid #ddd;border-radius: 5px">
                             <div class="ui comments">
                               <div v-for="comment in comments" class="comment">
                                 <a class="avatar">
-                                  <img src="[[comment.author.avatar]]">
+                                  <img :src="comment.author.avatar">
                                 </a>
                                 <div class="content">
                                   <a id="username" href="/profile/[[comment.author.id]]">[[comment.author.name]]</a>
@@ -132,12 +133,14 @@
                 <div class="ui divider" style="color: #f0f2f7;"></div>
 
             </div>
+            </div>
+
             <!--提问的-->
-            <div v-if="user_question_show" id="question" v-for="question in user_asks" class="ui items">
-                <div class="item">
+            <div v-if="user_question_show" id="question" class="ui items">
+                <div class="item" v-for="question in user_asks">
                     <div class="content" style="padding-left:10px;">
                         <div>
-                            <img class="right floated mini ui image" style="height: 30px;width: 30px" src="[[question.author.avatar]]">
+                            <img class="right floated mini ui image" style="height: 30px;width: 30px" :src="question.author.avatar">
                             <div class="meta">
                                 <a href="/profile/[[question.author.id]]/" style="font-weight:bold;color:#000000;">[[ question.author.name ]],</a>
                                 <span style="color:#BFBFBF;font-size: 13px">[[ question.author.desc ]]</span>
@@ -189,7 +192,8 @@
                 user_question_show:false,
                 like_active: '',
                 ask_active:'',
-                answer_active:''
+                answer_active:'',
+                comments:[]
             },
             methods:{
                 addQuestionBtn:function () {
@@ -202,7 +206,6 @@
                 },
                 ifLogin:function () {
                     var self=this;
-                    console.log(self.user_info);
                     if (self.user_info==''){
                         return $('#register-modal').modal('show')
                     }
@@ -219,8 +222,8 @@
                             desc: self.question.desc,
                             topic:self.question.topic
                         },
-                        success:function () {
-                            location.onload()
+                        success:function (resp) {
+                            window.location.href= '/question/'+resp.id+'/'
                         }
                     })
                 },
@@ -264,14 +267,14 @@
                         headers: Cookies.get('token')?{'Authorization': 'Token ' + Cookies.get('token')}:{},
                         success:function (resp) {
                             self.user_asks = resp;
+                            if(resp.length<10){
+                                self.qmoreOrNot = '没有了'
+                            }
                             self.user_answer_show = false;
                             self.user_question_show = true;
                             self.like_active = '';
                             self.ask_active = 'active';
                             self.answer_active = '';
-                            if(resp.length<10){
-                                self.moreOrNot = '没有了'
-                            }
                         }
                     })
                 },
@@ -281,13 +284,13 @@
                         url : '/api/answers?user_answer_id=' + self.visit_user.id,
                         type: 'json',
                         success:function (resp) {
-                            self.like_answers = resp;
                             for (r in resp) {
                                 resp[r].show_all_comments = false;
                             }
                             if(resp.length<10){
                                 self.amoreOrNot = '没有了'
                             }
+                            self.like_answers = resp;
                             self.user_answer_show = true;
                             self.user_question_show = false;
                             self.like_active = '';
@@ -337,12 +340,10 @@
                         headers: Cookies.get('token')?{'Authorization': 'Token ' + Cookies.get('token')}:{},
                         success:function (resp) {
                             before_len = self.user_asks.length;
-                            console.log(before_len);
                             for(a in resp){
                                 self.user_asks.push(resp[a])
                             }
                             after_len = self.user_asks.length;
-                            console.log(after_len);
                             if (after_len-before_len<5){
                                 self.qmoreOrNot = '没有了'
                             }
@@ -414,8 +415,6 @@
                 },
                 displayEditBtn:function (id) {
                     var self = this;
-                    console.log(id);
-                    console.log({{ user_id }});
                     if(self.user_info.id == {{ user_id }}){
                         document.querySelector('#editButton').style.cssText = "float: right;display: ";
                     }

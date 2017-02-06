@@ -1,145 +1,360 @@
-{% load staticfiles %}
+{% load static %}
 <!DOCTYPE html>
 <html>
   <head>
-    <meta charset="utf-8">
-    <title>搜索页</title>
-    <link rel="stylesheet" href="{% static 'css/semantic.css' %}" media="screen" title="no title">
-    <link rel="stylesheet" href="{% static 'css/common.css' %}" media="screen" title="no title" charset="utf-8">
-    <link rel="stylesheet" href="{% static 'css/search.css' %}" media="screen" title="no title">
-  </head>
-  <body>
- <div class="top nav">
-        <div class="ui fixed borderless menu">
-            <div class="logo item">
-                <a href="{% url 'home' %}">
-                    <img src="{% static 'images/logo.png' %}" alt="" class="ui image" />
-                </a>
-            </div>
-            <div class="item">
-                <form class="ui icon input" action="{% url 'search' %}">
-                  <input class="prompt" placeholder="搜索您感兴趣的内容..." type="text" name="q" value="{{ q }}">
-                  <i class="search icon"></i>
-                </form>
-            </div>
-            <a class="item">
-                <img src="{% static 'images/question_icon.png' %}" alt="" class="ui image" />
-                <span class="nav text" onclick="$('.ui.modal').modal('show')">提问</span>
-            </a>
-            <a class="item" href="{% url 'home' %}">
-                <img src="{% static 'images/read_icon.png' %}" alt="" class="ui image" />
-                <span class="nav text">阅读</span>
-            </a>
-            <a class="item" href="{% url 'answer' %}">
-                <img src="{% static 'images/answer_icon.png' %}" alt="" class="ui image" />
-                <span class="nav text">回答</span>
-            </a>
+    <title>搜索</title>
+    <link rel="stylesheet" href="{% static 'css/home.css' %}" media="screen" title="no title" charset="utf-8">
+    <link rel="stylesheet" href="{% static 'css/login.css' %}" media="screen" title="no title" charset="utf-8">
+    {% include 'css_js.html' %}
 
-            {% if request.user.is_authenticated %}
-            <div class="right menu">
-                <a class="item" href="{% url 'profile' %}" >
-                    <img src="/uploads/{{ request.user.profile.avatar }}" alt="" class="ui image" />
-                    <span class="nav text"> {{ request.user.profile.name }}</span>
-                </a>
+<body id="app">
+    <div id="home-page" style="display: none">
+        {% include 'top_nav.html' %}
+        <div class="ui basic segment container">
+            <div class="ui tabular menu">
+                <a :class="{active: search_type=='content'}" class="item" v-on:click="searchCon">内容</a>
+                <a :class="{active: search_type=='people'}" class="item" v-on:click="searchUser">用户</a>
+                <a :class="{active: search_type=='topic'}" class="item" v-on:click="searchTopic">话题</a>
             </div>
-            {% else %}
-            <div class="right menu">
-                <a class="item" href="{% url 'login' %}" >
-                    <span class="nav text"> 登录</span>
-                </a>
+            <div class="ui divider"></div>
 
-                <a class="item" href="{% url 'register' %}" >
-                    <span class="nav text"> 注册 </span>
-                </a>
+            <!--用户搜索-->
+            <div v-if="search_type=='people'" class="user" v-for="user in userList">
+                <img style="height: 50px;width: 50px;float: left" :src="user.profile.avatar">
+                <div style="margin-left: 60px">
+                    <a>[[ user.username ]]</a>
+                    <div style="margin-top: 7px">[[ user.profile.desc ]]</div>
+                </div>
             </div>
-            {% endif %}
+            <!--话题搜索-->
+            <div v-if="search_type=='topic'" class="topic" v-for="topic in topicList">
+                <a href="/topic#[[topic.name]]" class="topic button ">
+                    <span v-on:click="sendTopic(topic)">[[ topic.name ]]</span>
+                </a>
+                <div class="ui divider"></div>
+            </div>
+
+            <!--内容搜索-->
+            <div v-if="search_type=='content'" class="ui items">
+                <div v-for="answer in answers" class="item">
+                    <!--用户头像和点赞-->
+                    <div class="ui small image" style="width:37px;height:37px;">
+                        <img style="width:37px;height:37px;" :src="answer.author.avatar">
+                        <!--点赞数未展开-->
+                        <div class="user_like" v-if="!answer.show_all_content">
+                            <button v-on:click="answer.show_all_content=!answer.show_all_content" class="ui icon button" style="position:relative;background-color:#eff6fa;height:24px;width:37px;left:-13px;color: #698ebf;font-size:12px;font-weight: bold;">
+                                <span id="close_like_count">[[ answer.like_counts ]]</span>
+                            </button>
+                        </div>
+                        <!--点赞数展开-->
+                        <div class="user-vote" v-if="answer.show_all_content">
+                            <div class="user-like" v-on:click="userVote(answer)">
+                                <button class="ui icon button up [[answer.like_or]]" type="submit" name="button">
+                                    <i class="ui caret up icon"></i>
+                                    <div id="user_like_counts">[[ answer.like_counts ]]</div>
+                                </button>
+                            </div>
+
+                            <div class="user-dislike">
+                                <button class="ui icon button down" type="submit" name="button">
+                                    <i class="ui caret down icon"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <!--答案主体-->
+                    <div class="content" style="display:inline-block;">
+                        <a id="question-title" class="header" style="font-size:15px;color:#225599;" href="/question/[[answer.question.id]]/answer/[[answer.id]]">
+                            [[ answer.question.title ]]
+                        </a>
+                        <div class="meta">
+                            <a id="username" href="/profile/[[answer.author.id]]/">[[answer.author.name ]],</a>
+                            <span id="user-desc">[[ answer.author.desc ]]</span>
+                        </div>
+                        <div v-if="!answer.show_all_content" class="description">
+                            <p style="font-size:13px;line-height:1.69;font-stretch: normal;">
+                            [[ answer.content | limitBy 150 ]]
+                            <a id="show-all-content-a" v-on:click="showAllContent(answer)">显示全部</a></p>
+                        </div>
+                        <div v-if="answer.show_all_content" class="description" style="margin-top: 15px">
+                            <p style="font-size:13px;line-height:1.69;font-stretch: normal;">
+                            [[ answer.content ]]
+                            <a id="show-all-content-a" v-on:click="answer.show_all_content=!answer.show_all_content">收起</a>
+                        </div>
+
+                        <div class="extra">
+                            <i class="comment icon"></i>
+                            <a id="comment-num-a" v-if="answer.comment_counts==0" v-show="!answer.show_all_comments" v-on:click="getComment(answer)">添加评论</a>
+                            <a v-show="answer.show_all_comments" v-on:click="showAllCommentsSwitch(answer)" style="font-size:13px;">收起</a>
+                            <a id="comment-num-a" v-on:click="getComment(answer)" v-show="!answer.show_all_comments"  v-if="!answer.comment_counts==0">[[ answer.comment_counts ]]条评论</a>
+                        </div>
+                        <!--评论和回复-->
+                        <div v-if="answer.show_all_comments" style="box-sizing: border-box;padding: 20px;width: 500px;border: 1px solid #ddd;border-radius: 5px">
+                            <div class="ui comments">
+                              <div v-for="comment in comments" class="comment">
+                                <a class="avatar">
+                                  <img :src="comment.author.avatar">
+                                </a>
+                                <div class="content">
+                                  <a id="username" href="/profile/[[comment.author.id]]">[[comment.author.name]]</a>
+                                  <div class="metadata">
+                                    <div class="date">[[comment.create_time]]</div>
+                                  </div>
+                                  <div class="text">
+                                    [[comment.content]]
+                                  </div>
+                                  <div class="actions" v-on:click="commentReplyInput(comment)">
+                                    <a class="reply active" style="color: #999">回复</a>
+                                  </div>
+                                  <form v-show="comment.comment_reply_input" class="ui reply form">
+                                    <div class="field">
+                                      <input>
+                                    </div>
+                                    <div v-on:click="commentReplyInput(comment)" class="ui tiny button" style="background-color: white;color: #999;margin-left: 68%;">
+                                      取消
+                                    </div>
+                                    <div class="ui tiny button" style="background-color: #0D6EB8;color: white;float: right">
+                                      回复
+                                    </div>
+                                  </form>
+                                </div>
+                              <div class="ui divider"></div>
+                              </div>
+                                <!--评论表单-->
+                              <form class="ui form">
+                                <div class="field">
+                                  <input v-model="comment_content" placeholder="写下你的评论..."></input>
+                                </div>
+                                <div v-on:click="comment_content=''" class="ui tiny button" style="background-color: white;color: #999;margin-left: 71%;">
+                                  取消
+                                </div>
+                                <div v-on:click="addComment(answer)" class="ui tiny button" style="background-color: #0D6EB8;color: white;float: right">
+                                  评论
+                                </div>
+                              </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="ui divider"></div>
+            </div>
         </div>
+        {% include 'footer.html' %}
     </div>
+    <script>
+        Vue.config.delimiters = ["[[", "]]"];
+        vm = new Vue({
+            el: '#app',
+            data:{
+                moreOrNot:'加载更多',
+                answers:[],
+                topics:[],
+                topicChoice: '',
+                comments:[],
+                comment_input_show:true,
+                comment_content:'',
+                user_info:'',
+                login_not:false,
+                login_already:false,
+                question:{
+                    title:'',
+                    desc: '',
+                    topic:''
+                },
+                search_type: 'content',
+                q:'{{ q }}',
+                userList:[],
+                topicList:[]
+            },
+            methods:{
+                searchCon:function () {
+                    var self = this;
+                    self.search_type = 'content';
+                    reqwest({
+                        url: '/api/answers/?q='+ '{{ q }}',
+                        type: 'json',
+                        success:function (resp) {
+                            if(resp.length<10){
+                                self.moreOrNot = '没有了'
+                            }
+                            for (r in resp) {
+                                resp[r].show_all_comments = false;
+                            }
+                            self.answers = resp;
+                        }
+                    })
+                },
+                searchUser:function () {
+                    var self = this;
+                    self.search_type = 'people';
+                    reqwest({
+                        url: '/api/users/?type=people&q='+ '{{ q }}',
+                        type: 'json',
+                        success:function (resp) {
+                            self.userList = resp;
+                        }
+                    })
+                },
+                searchTopic:function () {
+                    var self = this;
+                    self.search_type = 'topic';
+                    reqwest({
+                        url: '/api/topics/?type=topic&q='+ '{{ q }}',
+                        type: 'json' ,
+                        success:function (resp) {
+                            self.topicList = resp;
 
-    <!-- 内容部分开始 -->
-        <div class="ui basic segment" style="margin-bottom:0px;padding-bottom:0px;">
-          <div class="ui grid">
-            <div class="three wide column"></div>
-            <!-- 空格 -->
-            <div class="seven wide column">
-              <div class="on the line">
-                <span class="active item all searching-2" style="color:red">{{ q }}</span>
-                <span class="active item all searching">
-                  的搜索结果
-                </span>
-              </div>
+                        }
+                    })
+                },
+                addQuestionBtn:function () {
+                    var self=this;
+                    if (self.user_info==''){
+                        return $('#register-modal').modal('show')
+                    }else{
+                        return $('#question-modal').modal('show');
+                    }
+                },
+                addQuestion:function () {
+                    var self = this;
+                        reqwest({
+                        url: '/api/questions/',
+                        type: 'json',
+                        method: 'post',
+                        headers: Cookies.get('token')?{'Authorization': 'Token ' + Cookies.get('token')}:{},
+                        data:{
+                            title:self.question.title,
+                            desc: self.question.desc,
+                            topic:self.question.topic
+                        },
+                        success:function (resp) {
+                            window.location.href= '/question/'+resp.id+'/'
+                        }
+                    })
+                },
+                getComment:function (answer) {
+                    var self = this;
+                    reqwest({
+                        url: '/api/comments?answer_id=' + answer.id,
+                        type: 'json',
+                        headers: Cookies.get('token')?{'Authorization': 'Token ' + Cookies.get('token')}:{},
+                        success:function (resp) {
+                            self.comments = resp;
+                            answer.show_all_comments = true;
+                        }
+                    })
+                },
+                sendTopic:function (topic) {
+                    var self = this;
+                    reqwest({
+                        url: '/api/answers?topic='+ topic.name+ '&p=' + self.answers.length,
+                        type: 'json',
+                        success:function (resp) {
+                            self.answers = resp;
+                            self.topicChoice = topic.name;
+                        }
+                    })
+                },
+                loadMoreAnswer:function () {
+                    var self = this;
+                    reqwest({
+                        url: '/api/answers?topic='+ self.topicChoice+ '&p=' + self.answers.length,
+                        type: 'json',
+                        headers: Cookies.get('token')?{'Authorization': 'Token ' + Cookies.get('token')}:{},
+                        success:function (resp) {
+                            for (r in resp) {
+                                resp[r].show_all_comments = false
+                            }
+                            before_len = self.answers.length;
+                            for(a in resp){
+                                self.answers.push(resp[a])
+                            }
+                            after_len = self.answers.length;
+                            if (after_len-before_len<5){
+                                self.moreOrNot = '没有了'
+                            }
+                        }
+                    })
+                },
+                {# 判断用户是否点赞 #}
+                userLikeOrNot:function (answer) {
+                    var self = this;
+                    {# 将用户所有点赞answer的id添加进列表 #}
+                    var like_id_list = [];
+                    like_list = self.user_info.profile.user_vote_answer;
+                    for (i in like_list){
+                        like_id_list.push(like_list[i].id);
+                    }
+                    {# 判断该answer的id是否在列表中 #}
+                    if (like_id_list.indexOf(answer.id) != -1){
+                        answer.like_or = 'like'
+                    }else {
+                        answer.like_or = 'normal'
+                    }
+                },
+                showAllCommentsSwitch:function (answer) {
+                    answer.show_all_comments = !answer.show_all_comments;
+                },
+                showAllContent:function (answer) {
+                    var self = this;
+                    {# 如果是登录状态，判断用户是否对其点赞 #}
+                    if (self.user_info!= ''&& self.user_info!=undefined){
+                        this.userLikeOrNot(answer);
+                    }
+                    answer.show_all_content=!answer.show_all_content;
+                },
+                commentReplyInput:function (comment) {
+                    comment.comment_reply_input = !comment.comment_reply_input
+                },
+                addComment:function (answer) {
+                    var self = this;
+                    reqwest({
+                        url: '/api/comments/',
+                        method: 'post',
+                        type: 'json',
+                        headers: Cookies.get('token')?{'Authorization': 'Token ' + Cookies.get('token')}:{},
+                        data:{
+                            content: self.comment_content,
+                            answer_id: answer.id
+                        },
+                        success:function () {
+                            self.getComment(answer);
+                            self.searchCon();
+                        }
+                    })
+                },
+                logOut:function () {
+                    Cookies.remove('token');
+                    location.reload()
+                },
+                request_user:function () {
+                    var self = this;
+                    reqwest({
+                        url: '/api/users/now/',
+                        type: 'json',
+                        headers: Cookies.get('token')?{'Authorization': 'Token ' + Cookies.get('token')}:{},
+                        success:function (resp) {
+                            self.user_info = resp;
+                            self.login_already = true
 
-              <!-- 线上的内容 -->
-              <div class="ui divider" style="margin-bottom:0px"></div>
-
-              {% for answer in answers %}
-              <div class="ui items" style="margin-bottom:0px; margin-top:10px;">
-                <div class="item">
-                  <div class="header" style="color:#c33825;font-size:14px;">
-                    <button class="compact ui button" style="width:38px;height:24px;padding:0 0 0 0px;">
-                      <span style="color:#7093c2">{{ answer.like_counts }}</span>
-                    </button>
-                  </div>
-                  <div class="content" style="margin-left:40px;">
-                    <div class="header" style="color:#2e5e9f;font-size:14px;">
-                      {{ answer.question.title }}
-                    </div>
-                    <div class="meta">
-                      <span style="font-weight:bold;color:#000000;">{{ answer.author.name }}</span>
-                      <span style="color:#BFBFBF">{{ answer.author.desc }}</span>
-                    </div>
-
-                    <div class="ui basic segment-p">
-                      {{ answer.content }}
-                      <a href="{% url 'detail' answer.question.id %}" style="fort-size:12px;line-height:1.83">显示全部</a></p>
-                    </div>
-
-                    <div class="extra">
-                      <div class="ui image">
-                        <img src="{% static 'images/comment_icon.png' %}">
-                      </div>
-                        <span>{{ answer.comment_counts }}条评论</span>
-                    </div>
-
-                    </div>
-                  </div>
-                  <div class="ui divider"></div>
-              </div>
-              {% endfor %}
-
-              <div class="ui button" tabindex="0" style="color:#225599;width:633px;height:35px;margin-left:0px;margin-top:10px;margin-bottom:0px;background-color:#eff6fa;">
-                <div class="visible content">加载更多</div>
-              </div>
-
-            <div class="six wide column"></div>
-            <!-- 空格 -->
-          </div>
-        </div>
-        <!-- 内容部分结束 -->
-        <!-- 网页footer部分开始 -->
-            <div class="ui basic segment footer">
-              <div class="ui divider" style="width:960px;height:3px;"></div>
-              <div class="ui three column grid">
-                <div class="column">
-                  <div class="footer1">Developed by Mugglecoding team</div>
-                </div>
-                <div class="column">
-                  <div class="footer2">关于我们 . 加入我们 . 联系我们</div>
-                </div>
-                <div class="column">
-                  <div class="footer3">京ICP备15047012号-2</div>
-                </div>
-              </div>
-            </div>
-
-        <!-- 网页footer部分结束 -->
-      </body>
-    </html>
-
-
-
-
-
-
-  </body>
+                            },
+                        error:function (err) {
+                            json_msg = JSON.parse(err.response);
+                            self.login_not = true
+                        }
+                    })
+                },
+                displayBody:function () {
+                    document.querySelector('#home-page').style.cssText = "display:"
+                }
+            },
+            ready:function () {
+                this.request_user();
+                this.searchCon();
+                this.displayBody();
+            }
+        })
+    </script>
+    </body>
 </html>
+

@@ -17,10 +17,10 @@
                 <div v-for="answer in answers" class="item">
                     <!--用户头像和点赞-->
                     <div class="ui small image" style="width:37px;height:37px;">
-                        <img style="width:37px;height:37px;" src="[[answer.author.avatar]]">
+                        <img style="width:37px;height:37px;" :src="answer.author.avatar">
                         <!--点赞数未展开-->
                         <div class="user_like" v-if="!answer.show_all_content">
-                            <button v-on:click="answer.show_all_content=!answer.show_all_content" class="ui icon button" style="position:relative;background-color:#eff6fa;height:24px;width:37px;left:-13px;color: #698ebf;font-size:12px;font-weight: bold;">
+                            <button v-on:click="showAllContent(answer)" class="ui icon button" style="position:relative;background-color:#eff6fa;height:24px;width:37px;left:-13px;color: #698ebf;font-size:12px;font-weight: bold;">
                                 <span id="close_like_count">[[ answer.like_counts ]]</span>
                             </button>
                         </div>
@@ -62,46 +62,66 @@
 
                         <div class="extra">
                             <i class="comment icon"></i>
-                            <a id="comment-num-a" v-if="answer.comment_counts==0" v-show="!answer.show_all_comments" v-on:click="getComment(answer)">添加评论</a>
+                            <a id="comment-num-a" v-if="answer.comment_counts==0" v-show="!answer.show_all_comments" v-on:click="getComment(answer, 1)">添加评论</a>
                             <a id="comment-num-a" v-show="answer.show_all_comments" v-on:click="showAllCommentsSwitch(answer)">收起</a>
-                            <a id="comment-num-a" v-on:click="getComment(answer)" v-show="!answer.show_all_comments"  v-if="!answer.comment_counts==0">[[ answer.comment_counts ]]条评论</a>
+                            <a id="comment-num-a" v-on:click="getComment(answer, 1)" v-show="!answer.show_all_comments"  v-if="!answer.comment_counts==0">[[ answer.comment_counts ]]条评论</a>
                         </div>
                         <!--评论和回复-->
                         <div v-if="answer.show_all_comments" style="box-sizing: border-box;padding: 20px;width: 500px;border: 1px solid #ddd;border-radius: 5px">
                             <div class="ui comments">
                               <div v-for="comment in comments" class="comment">
                                 <a class="avatar">
-                                  <img src="[[comment.author.avatar]]">
+                                  <img :src="comment.author.avatar">
                                 </a>
                                 <div class="content">
-                                  <a id="username" href="/profile/[[comment.author.id]]">[[comment.author.name]]</a>
+                                  <a id="username" href="/profile/[[comment.author.id]]">
+                                      [[comment.author.name]]
+                                  </a>
+                                  <span v-if="comment.parent.length!=0" style="color: #999;font-size: 13px;margin: 3px;font-weight: 500;">回复</span>
+                                  <a id="username" href="/profile/[[comment.parent.author.id]]">
+                                      [[comment.parent.author.name]]
+                                  </a>
                                   <div class="metadata">
-                                    <div class="date">[[comment.create_time]]</div>
+                                    <div class="date">[[comment.create_time | timeDeal]]</div>
                                   </div>
                                   <div class="text">
                                     [[comment.content]]
                                   </div>
-                                  <div v-on:click="ifLogin" class="actions" v-on:click="commentReplyInput(comment)">
-                                    <a class="reply active" style="color: #999">回复</a>
+                                  <div v-on:click="ifLogin" class="actions">
+                                    <a v-on:click="commentReplyInput(comment)" class="reply active" style="color: #999">回复</a>
                                   </div>
-                                  <form v-show="comment.comment_reply_input" class="ui reply form">
+                                  <div v-show="comment.comment_reply_input" class="ui reply form">
                                     <div class="field">
-                                      <input>
+                                      <input v-model="comment_content">
                                     </div>
                                     <div v-on:click="commentReplyInput(comment)" class="ui tiny button" style="background-color: white;color: #999;margin-left: 68%;">
                                       取消
                                     </div>
-                                    <div class="ui tiny button" style="background-color: #0D6EB8;color: white;float: right">
+                                    <div v-on:click="replyComment(answer, comment)" class="ui tiny button" style="background-color: #0D6EB8;color: white;float: right">
                                       回复
                                     </div>
-                                  </form>
+                                  </div>
                                 </div>
-                              <div class="ui divider"></div>
                               </div>
+
+                                <div class="comment-pagination" style="border-top: 1px solid #eee;border-bottom: 1px solid #eee;font-size: 1.1em;text-align: center;line-height: 2.7;height: 43px;margin-top: 20px">
+                                    <a v-show="havePre" style="padding: .5em;" v-on:click="nextPageComment(answer, pre)">上一页</a>
+                                    <span v-show="!havePre" style="color: #999">上一页</span>
+                                    <span v-for="page in page_lists">
+                                        <span><a v-show="now_page!=page" style="padding: .5em;" v-on:click="getComment(answer, page)">[[page]]</a></span>
+                                        <span style="padding: .5em;" v-show="now_page==page">[[page]]</span>
+                                    </span>
+
+                                    <a v-show="haveNext" style="padding: .5em;" v-on:click="nextPageComment(answer)">下一页</a>
+                                    <span v-show="!haveNext" style="color: #999">下一页</span>
+                                </div>
+
+                            </div>
+
                                 <!--评论表单-->
                               <form class="ui form">
                                 <div v-on:click="ifLogin" class="field">
-                                  <input v-model="comment_content" placeholder="写下你的评论..."></input>
+                                  <input v-model="comment_content" placeholder="写下你的评论...">
                                 </div>
                                 <div v-on:click="comment_content=''" class="ui tiny button" style="background-color: white;color: #999;margin-left: 71%;">
                                   取消
@@ -112,7 +132,7 @@
                               </form>
                             </div>
                         </div>
-                    </div>
+
                 </div>
                 <div class="ui divider"></div>
             </div>
@@ -127,10 +147,12 @@
     </div>
     <script>
         Vue.config.delimiters = ["[[", "]]"];
+        Vue.filter('timeDeal', function(create_time){
+            return create_time
+        });
         vm = new Vue({
             el: '#app',
             data:{
-                test: '',
                 moreOrNot:'加载更多',
                 answers:[],
                 topics:[],
@@ -153,9 +175,19 @@
                 username_err:'',
                 password_err:'',
                 email_err:'',
-                msgShow:false
+                msgShow:false,
+                page_lists:[],
+                pre: true,
+                havePre:false,
+                haveNext:false,
+                now_page:1,
+                nowPage: '',
+                q: ''
             },
             methods:{
+                toSearch:function () {
+                    window.location.href= '/search/?q=' + this.q
+                },
                 {#添加问题按钮 未登录弹出注册框#}
                 addQuestionBtn:function () {
                     var self=this;
@@ -163,13 +195,6 @@
                         return $('#register-modal').modal('show')
                     }else{
                         return $('#question-modal').modal('show');
-                    }
-                },
-                {# 判断是否登录，未登录弹出注册框 #}
-                ifLogin:function () {
-                    var self=this;
-                    if (self.user_info==''){
-                        return $('#register-modal').modal('show')
                     }
                 },
                 {# 添加问题 #}
@@ -190,6 +215,14 @@
                         }
                     })
                 },
+                {# 判断是否登录，未登录弹出注册框 #}
+                ifLogin:function () {
+                    var self=this;
+                    if (self.user_info==''){
+                        return $('#register-modal').modal('show')
+                    }
+                },
+
                 getAnswer:function () {
                     var self = this;
                     reqwest({
@@ -197,6 +230,9 @@
                         type: 'json',
                         headers: Cookies.get('token')?{'Authorization': 'Token ' + Cookies.get('token')}:{},
                         success:function (resp) {
+                            if(resp.length<10){
+                                self.moreOrNot = '没有了'
+                            }
                             {# 为每个answer添加默认不显示评论 #}
                             for (r in resp) {
                                 resp[r].show_all_comments = false;
@@ -205,17 +241,60 @@
                         }
                     })
                 },
-                getComment:function (answer) {
+                getComment:function (answer, page) {
                     var self = this;
                     reqwest({
-                        url: '/api/comments?answer_id=' + answer.id,
+                        url: '/api/comments?page=' + page + '&answer_id=' + answer.id,
                         type: 'json',
                         headers: Cookies.get('token')?{'Authorization': 'Token ' + Cookies.get('token')}:{},
                         success:function (resp) {
-                            self.comments = resp;
+                            self.comments = [];
+                            self.comments = resp.data;
+                            self.now_page = resp.now_page;
+                            self.page_lists = resp.page_list;
                             answer.show_all_comments = true;
+                            if (resp.have_next == true){
+                                self.haveNext = true
+                            }else{
+                                self.haveNext = false
+                            }
+                            if (page == 1) {
+                                self.havePre = false
+                            }else{self.havePre = true}
                         }
                     })
+                },
+                nextPageComment:function(answer, pre){
+                    var self = this;
+                    if (pre == true){
+                        var page = parseInt(self.now_page)-1
+                    }else{
+                        page  = parseInt(self.now_page)+1;
+                    }
+                    if (page<1){
+
+                    }else{
+                        reqwest({
+                            url: '/api/comments?page=' + page + '&answer_id=' + answer.id,
+                            type: 'json',
+                            headers: Cookies.get('token')?{'Authorization': 'Token ' + Cookies.get('token')}:{},
+                            success:function (resp) {
+                                self.comments = [];
+                                self.comments = resp.data;
+                                self.now_page = resp.now_page;
+                                self.page_lists = resp.page_list;
+                                answer.show_all_comments = true;
+                                if (resp.have_next == true){
+                                    self.haveNext = true
+                                }else{
+                                    self.haveNext = false
+                                }
+                                if (page == 1) {
+                                    self.havePre = false
+                                }else{self.havePre = true}
+                            }
+                        })
+                    }
                 },
                 loadMoreAnswer:function () {
                     var self = this;
@@ -245,7 +324,6 @@
                 showAllContent:function (answer) {
                     var self = this;
                     {# 如果是登录状态，判断用户是否对其点赞 #}
-                    console.log(self.user_info)
                     if (self.user_info!= ''&& self.user_info!=undefined){
                         this.userLikeOrNot(answer);
                     }
@@ -268,12 +346,36 @@
                             content: self.comment_content,
                             answer_id: answer.id
                         },
-                        success:function () {
-                            self.getComment(answer);
+                        success:function (resp) {
+                            var comment_counts = resp.comment_counts;
+                            page = Math.ceil(comment_counts/5);
+                            console.log(page);
+                            self.getComment(answer, page);
                             self.comment_content = ''
                         }
                     })
                 },
+                replyComment:function (answer, comment) {
+                    var self = this;
+                    reqwest({
+                        url: '/api/comments/',
+                        method: 'post',
+                        type: 'json',
+                        headers: Cookies.get('token')?{'Authorization': 'Token ' + Cookies.get('token')}:{},
+                        data:{
+                            content: self.comment_content,
+                            answer_id: answer.id,
+                            parent_id: comment.id
+                        },
+                        success:function (resp) {
+                            var comment_counts = resp.comment_counts;
+                            page = Math.ceil(comment_counts/5);
+                            self.getComment(answer, page);
+                            self.comment_content = ''
+                        }
+                    })
+                },
+
                 userVote:function (answer) {
                     var self = this;
                     {# 判断登录 #}

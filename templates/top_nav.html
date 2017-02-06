@@ -7,9 +7,9 @@
             </a>
         </div>
         <div class="item">
-            <form class="ui icon input" action="">
-              <input class="prompt" placeholder="搜索您感兴趣的内容..." type="text" name="q">
-              <i class="search icon"></i>
+            <form class="ui icon input" action="/search/">
+                <input class="prompt" placeholder="搜索您感兴趣的内容..." name="q">
+                <i class="search icon"></i>
             </form>
         </div>
         <a v-on:click="addQuestionBtn" class="item">
@@ -28,7 +28,7 @@
 
             <div class="dropdown" style="margin-left: 129px;margin-top: 3px">
                 <div style="height: 43px;width: 120px">
-                    <img style="width: 40px" src="[[user_info.profile.avatar]]" alt="" class="ui circular image" />
+                    <img style="width: 40px" :src="user_info.profile.avatar" alt="" class="ui circular image" />
                 </div>
                 <div class="dropdown-content">
                     <div><a style="font-size: 16px">[[user_info.username]]</a></div>

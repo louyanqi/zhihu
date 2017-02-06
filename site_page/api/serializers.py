@@ -115,13 +115,21 @@ class TopicSerializer(ModelSerializer):
         depth = 1
 
 
+class CommentParentSerializer(ModelSerializer):
+    class Meta:
+        model = Comment
+        fields = ['author']
+        depth = 1
+
+
 class CommentSerializer(ModelSerializer):
     answer = AnswerForCommentSerializer()
+    parent = CommentParentSerializer()
 
     class Meta:
         model = Comment
         fields = [
-            'id', 'content', 'create_time', 'comment_reply_input', 'author', 'answer'
+            'id', 'content', 'create_time', 'comment_reply_input', 'author', 'answer', 'parent'
         ]
         depth = 1
 

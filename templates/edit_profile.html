@@ -21,7 +21,7 @@
         <table>
             <tbody>
                 <tr>
-                    <td><img src="[[user_info.profile.avatar ]]" style="width:100px;height:100px" /></td>
+                    <td><img :src="user_info.profile.avatar" style="width:100px;height:100px" /></td>
                     <td>
                         <form method="post" enctype="multipart/form-data" action="/profile/[[user_info.id]]/edit/">
 
@@ -90,7 +90,7 @@
                 },
                 addQuestion:function () {
                     var self = this;
-                    reqwest({
+                        reqwest({
                         url: '/api/questions/',
                         type: 'json',
                         method: 'post',
@@ -100,8 +100,8 @@
                             desc: self.question.desc,
                             topic:self.question.topic
                         },
-                        success:function () {
-                            location.onload()
+                        success:function (resp) {
+                            window.location.href= '/question/'+resp.id+'/'
                         }
                     })
                 },

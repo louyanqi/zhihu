@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 #-*- coding: utf-8 -*-
-from django.shortcuts import render, redirect
-
-from site_page.models import UserProfile, Answer, Question
+from django.shortcuts import render
+from django.db.models import Q
+from site_page.models import UserProfile, Answer, Question, User, Topic
 from site_page.forms import ProfileForm
 from django.shortcuts import get_object_or_404
 
@@ -79,3 +79,28 @@ def edit_profile(request, user_id):
         info.save()
     context = {'form': form}
     return render(request, 'edit_profile.html', context)
+
+
+def search(request):
+    q = request.GET.get('q')
+    search_type = request.GET.get('type')
+    if not search_type:
+        search_type = 'content'
+    user_list = topic_list = answer_list = []
+    if search_type == 'people':
+        user_list = User.objects.filter(Q(username__icontains=q))
+    elif search_type == 'topic':
+        topic_list = Topic.objects.filter(Q(name__icontains=q))
+    else:
+        answer_list = Answer.objects.filter(Q(question__title__icontains=q) |
+                                            Q(question__desc__icontains=q) |
+                                            Q(content__icontains=q))
+    print(answer_list)
+    context = {
+        'q': q,
+        'user_list': user_list,
+        'topic_list': topic_list,
+        'answer_list': answer_list,
+        'search_type': search_type
+    }
+    return render(request, 'search.html', context)

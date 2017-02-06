@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.utils import timezone
 
 
 class UserProfile(models.Model):
@@ -8,7 +9,7 @@ class UserProfile(models.Model):
     email = models.EmailField(null=True)
     desc = models.CharField(null=True, blank=True, max_length=250)
     avatar = models.ImageField(upload_to='avatars', default='/avatars/default.png')
-    create_time = models.DateField(auto_now=True)
+    create_time = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
         return self.name
@@ -16,7 +17,7 @@ class UserProfile(models.Model):
 
 class Topic(models.Model):
     name = models.CharField(null=True, blank=True, max_length=14)
-    create_time = models.DateField(auto_now=True)
+    create_time = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
         return self.name
@@ -28,7 +29,7 @@ class Question(models.Model):
     desc = models.TextField(null=True, blank=True, max_length=1000)
     topics = models.ForeignKey(to=Topic, related_name='question', null=True)
     answer_counts = models.IntegerField(default=0)
-    create_time = models.DateField(auto_now=True)
+    create_time = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
         return self.title
@@ -42,7 +43,7 @@ class Answer(models.Model):
     like_counts = models.IntegerField(default=0)
     dislike_counts = models.IntegerField(default=0)
     comment_counts = models.IntegerField(default=0)
-    create_time = models.DateField(auto_now=True)
+    create_time = models.DateTimeField(default=timezone.now)
     show_all_content = models.BooleanField(default=False)
     like_or = models.CharField(max_length=10, default='normal')
 
@@ -53,8 +54,9 @@ class Answer(models.Model):
 class Comment(models.Model):
     author = models.ForeignKey(to=UserProfile, related_name='comment_author')
     answer = models.ForeignKey(to=Answer, related_name='answer_comments')
+    parent = models.ForeignKey(to='self', null=True, blank=True, related_name='child')
     content = models.TextField(null=True, blank=True)
-    create_time = models.DateField(auto_now=True)
+    create_time = models.DateTimeField(default=timezone.now)
     comment_reply_input = models.BooleanField(default=False)
 
     def __str__(self):
@@ -64,7 +66,7 @@ class Comment(models.Model):
 class Vote(models.Model):
     owner = models.ForeignKey(to=UserProfile)
     give_to = models.ForeignKey(to=Answer)
-    create_time = models.DateField(auto_now=True)
+    create_time = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
         return self.owner.name

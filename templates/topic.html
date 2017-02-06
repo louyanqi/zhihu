@@ -20,7 +20,7 @@
             </div>
             <div class="ui divider"></div>
             <a href="#[[topic.name]]" class="topic button " v-for="topic in topics" >
-                <span v-on:click="sendTopic(topic)" v-el:topic-name>[[ topic.name ]]</span>
+                <span v-on:click="sendTopic(topic)">[[ topic.name ]]</span>
             </a>
 
             <div class="ui divider"></div>
@@ -31,7 +31,7 @@
                 <div v-for="answer in answers" class="item">
                     <!--用户头像和点赞-->
                     <div class="ui small image" style="width:37px;height:37px;">
-                        <img style="width:37px;height:37px;" src="[[answer.author.avatar]]">
+                        <img style="width:37px;height:37px;" :src="answer.author.avatar">
                         <!--点赞数未展开-->
                         <div class="user_like" v-if="!answer.show_all_content">
                             <button v-on:click="answer.show_all_content=!answer.show_all_content" class="ui icon button" style="position:relative;background-color:#eff6fa;height:24px;width:37px;left:-13px;color: #698ebf;font-size:12px;font-weight: bold;">
@@ -85,7 +85,7 @@
                             <div class="ui comments">
                               <div v-for="comment in comments" class="comment">
                                 <a class="avatar">
-                                  <img src="[[comment.author.avatar]]">
+                                  <img :src="comment.author.avatar">
                                 </a>
                                 <div class="content">
                                   <a id="username" href="/profile/[[comment.author.id]]">[[comment.author.name]]</a>
@@ -132,7 +132,7 @@
             </div>
             <div class="ui long button">
                 <div class="header item">
-                    <a v-on:click="loadMoreAnswer">加载更多</a>
+                    <a v-on:click="loadMoreAnswer">[[moreOrNot]]</a>
                 </div>
             </div>
         </div>
@@ -145,7 +145,7 @@
         vm = new Vue({
             el: '#app',
             data:{
-                test:'',
+                moreOrNot:'加载更多',
                 answers:[],
                 topics:[],
                 topicChoice: '',
@@ -162,9 +162,17 @@
                 }
             },
             methods:{
+                addQuestionBtn:function () {
+                    var self=this;
+                    if (self.user_info==''){
+                        return $('#register-modal').modal('show')
+                    }else{
+                        return $('#question-modal').modal('show');
+                    }
+                },
                 addQuestion:function () {
                     var self = this;
-                    reqwest({
+                        reqwest({
                         url: '/api/questions/',
                         type: 'json',
                         method: 'post',
@@ -174,8 +182,8 @@
                             desc: self.question.desc,
                             topic:self.question.topic
                         },
-                        success:function () {
-                            location.onload()
+                        success:function (resp) {
+                            window.location.href= '/question/'+resp.id+'/'
                         }
                     })
                 },
@@ -186,6 +194,9 @@
                         type: 'json',
                         headers: Cookies.get('token')?{'Authorization': 'Token ' + Cookies.get('token')}:{},
                         success:function (resp) {
+                            if(resp.length<10){
+                                self.moreOrNot = '没有了'
+                            }
                             for (r in resp) {
                                 resp[r].show_all_comments = false;
                             }
@@ -221,14 +232,13 @@
                                 self.topicChoice = topic;
                                 self.getAnswer(topic);
                             }
-                            console.log(topic)
                         }
                     })
                 },
                 sendTopic:function (topic) {
                     var self = this;
                     reqwest({
-                        url: '/api/answers?topic='+ topic.name+ '&?p=' + self.answers.length,
+                        url: '/api/answers?topic='+ topic.name+ '&p=' + self.answers.length,
                         type: 'json',
                         success:function (resp) {
                             self.answers = resp;
@@ -257,11 +267,29 @@
                         }
                     })
                 },
+                {# 判断用户是否点赞 #}
+                userLikeOrNot:function (answer) {
+                    var self = this;
+                    {# 将用户所有点赞answer的id添加进列表 #}
+                    var like_id_list = [];
+                    like_list = self.user_info.profile.user_vote_answer;
+                    for (i in like_list){
+                        like_id_list.push(like_list[i].id);
+                    }
+                    {# 判断该answer的id是否在列表中 #}
+                    if (like_id_list.indexOf(answer.id) != -1){
+                        answer.like_or = 'like'
+                    }else {
+                        answer.like_or = 'normal'
+                    }
+                },
                 showAllCommentsSwitch:function (answer) {
                     answer.show_all_comments = !answer.show_all_comments;
                 },
                 showAllContent:function (answer) {
-                    if (self.user_info!=undefined){
+                    var self = this;
+                    {# 如果是登录状态，判断用户是否对其点赞 #}
+                    if (self.user_info!= ''&& self.user_info!=undefined){
                         this.userLikeOrNot(answer);
                     }
                     answer.show_all_content=!answer.show_all_content;

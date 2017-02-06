@@ -26,11 +26,16 @@ class VoteAdmin(admin.ModelAdmin):
     list_display = ['owner', 'give_to', 'create_time']
     search_fields = ['owner', 'give_to', 'create_time']
 
+
+class CommentAdmin(admin.ModelAdmin):
+    list_display = ['author', 'answer', 'parent', 'create_time']
+    search_fields = ['author', 'answer', 'parent', 'create_time']
+
 admin.site.register(UserProfile, ProfileAdmin)
 admin.site.register(Topic, TopicAdmin)
 admin.site.register(Question, QuestionAdmin)
 admin.site.register(Answer, AnswerAdmin)
-admin.site.register(Comment)
+admin.site.register(Comment, CommentAdmin)
 admin.site.register(Vote, VoteAdmin)
 
 

@@ -25,7 +25,7 @@
             <div class="item">
                 <div class="content" style="padding-left:10px;">
                     <div>
-                        <img class="right floated mini ui image" style="height: 30px;width: 30px" src="[[question.author.avatar]]">
+                        <img class="right floated mini ui image" style="height: 30px;width: 30px" :src="question.author.avatar">
                         <div class="meta">
                             <a href="/profile/[[question.author.id]]/" style="font-weight:bold;color:#000000;">[[ question.author.name ]],</a>
                             <span style="color:#BFBFBF;font-size: 13px">[[ question.author.desc ]]</span>
@@ -84,7 +84,7 @@
                 },
                 addQuestion:function () {
                     var self = this;
-                    reqwest({
+                        reqwest({
                         url: '/api/questions/',
                         type: 'json',
                         method: 'post',
@@ -94,8 +94,8 @@
                             desc: self.question.desc,
                             topic:self.question.topic
                         },
-                        success:function () {
-                            location.onload()
+                        success:function (resp) {
+                            window.location.href= '/question/'+resp.id+'/'
                         }
                     })
                 },

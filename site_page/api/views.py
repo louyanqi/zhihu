@@ -10,12 +10,19 @@ from rest_framework.views import APIView
 from rest_framework.generics import CreateAPIView
 from rest_framework.authtoken.models import Token
 from django.core.exceptions import ObjectDoesNotExist
+from django.core.paginator import Paginator
+from site_page.paginator import get_page_list
+from django.db.models import Q
 
 
 @api_view(['GET'])
 def user_info(request):
     if request.method == 'GET':
-        user_list = User.objects.all()
+        if request.GET.get('type') == 'people':
+            q = request.GET.get('q')
+            user_list = User.objects.filter(Q(username__icontains=q))
+        else:
+            user_list = User.objects.all()
         serializer = UserSerializer(user_list, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -128,7 +135,7 @@ def answer(request):
     user_id = request.GET.get('user_id')
     user_answer_id = request.GET.get('user_answer_id')
     answer_id = request.GET.get('answer_id')
-
+    q = request.GET.get('q')
     if p:
         start = int(p)
         end = int(p)+5
@@ -152,6 +159,12 @@ def answer(request):
             answer_list = Answer.objects.filter(question__topics__name=the_topic)[:end]
             serializer = AnswerSerializer(answer_list, many=True)
             return Response(serializer.data, status=status.HTTP_200_OK)
+        elif q:  #搜索
+            answer_list = Answer.objects.filter(Q(question__title__icontains=q) |
+                                                Q(question__desc__icontains=q) |
+                                                Q(content__icontains=q))
+            serializer = AnswerSerializer(answer_list, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
         else:    #首页
             answer_list = Answer.objects.all()[start:end]
             serializer = AnswerSerializer(answer_list, many=True)
@@ -171,27 +184,55 @@ def answer(request):
 def comment(request):
     if request.method == 'GET':
         answer_id = request.GET.get('answer_id')
+        now_page = request.GET.get('page')
         comment_list = Comment.objects.all().filter(answer_id=answer_id)
+        paginator = Paginator(comment_list, 5)
+        num_pages = paginator.num_pages
+
+        if now_page is None:
+            now_page = 1
+            start = 0
+        else:
+            start = (int(now_page)-1)*5
+
+        if comment_list.count() > start+1:
+            have_next = True
+        else:
+            have_next = None
+        comment_list = comment_list[start:start+5]
+        page_list = get_page_list(current_page=int(now_page), left=3, right=4, page_number=num_pages)
         serializer = CommentSerializer(comment_list, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        data = {
+            'data': serializer.data,
+            'page_list': page_list,
+            'now_page': now_page,
+            'have_next':  have_next
+        }
+        return Response(data, status=status.HTTP_200_OK)
     if request.method == 'POST':
         data = request.data
+        parent_id = data.get('parent_id')
         content = data.get('content')
         answer_id = data.get('answer_id')
         answer_info = Answer.objects.get(id=answer_id)
         user = request.user.profile
-        new_comment = Comment.objects.create(author=user, answer_id=answer_id, content=content)
+        new_comment = Comment.objects.create(author=user, answer_id=answer_id, content=content, parent_id=parent_id)
         new_comment.save()
-        answer_info.comment_counts = Comment.objects.filter(answer_id=answer_id).count()
+        comment_counts = Comment.objects.filter(answer_id=answer_id).count()
+        answer_info.comment_counts = comment_counts
         answer_info.save()
 
-        return Response(status=status.HTTP_200_OK)
+        return Response({'comment_counts': comment_counts}, status=status.HTTP_200_OK)
 
 
 @api_view(['GET'])
 def topic(request):
     if request.method == 'GET':
-        topic_list = Topic.objects.all()
+        if request.GET.get('type') == 'topic':
+            q = request.GET.get('q')
+            topic_list = Topic.objects.filter(Q(name__icontains=q))
+        else:
+            topic_list = Topic.objects.all()
         serializer = TopicSerializer(topic_list, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 

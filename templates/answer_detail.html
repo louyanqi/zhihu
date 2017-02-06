@@ -68,7 +68,7 @@
                     <div class="ui comments">
                       <div v-for="comment in comments" class="comment">
                         <a class="avatar">
-                          <img src="[[comment.author.avatar]]">
+                          <img :src="comment.author.avatar">
                         </a>
                         <div class="content">
                           <a id="username" href="/profile/[[comment.author.id]]">[[comment.author.name]]</a>
@@ -125,7 +125,6 @@
         el: '#app',
         data:{
             test:{{ question.id }},
-            question:[],
             answer:[],
             user_info:'',
             login_not:false,
@@ -135,7 +134,12 @@
             comments:[],
             comment_input_show:true,
             comment_show:false,
-            comment_content:''
+            comment_content:'',
+            question:{
+                    title:'',
+                    desc: '',
+                    topic:''
+                },
         },
         methods:{
             addQuestionBtn:function () {
@@ -146,9 +150,25 @@
                     return $('#question-modal').modal('show');
                 }
             },
+            addQuestion:function () {
+                var self = this;
+                    reqwest({
+                    url: '/api/questions/',
+                    type: 'json',
+                    method: 'post',
+                    headers: Cookies.get('token')?{'Authorization': 'Token ' + Cookies.get('token')}:{},
+                    data:{
+                        title:self.question.title,
+                        desc: self.question.desc,
+                        topic:self.question.topic
+                    },
+                    success:function (resp) {
+                        window.location.href= '/question/'+resp.id+'/'
+                    }
+                })
+                },
             ifLogin:function () {
                 var self=this;
-                console.log(self.user_info);
                 if (self.user_info==''){
                     return $('#register-modal').modal('show')
                 }
@@ -225,7 +245,6 @@
                 }else {
                     answer.like_or = 'normal'
                 }
-                console.log(answer.like_or)
             },
             showAllCommentsSwitch:function () {
                 var self = this;
