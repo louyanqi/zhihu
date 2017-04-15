@@ -1,18 +1,17 @@
 from rest_framework.response import Response
+from django.contrib.auth import authenticate
 from rest_framework.decorators import api_view, authentication_classes
 from rest_framework.authentication import TokenAuthentication
 from site_page.models import User, UserProfile, Topic, Question, Answer, Comment, Vote
-from .serializers import (UserSerializer, QuestionSerializer,
+from .serializers import (UserSerializer, UserProfileSerializer, QuestionSerializer,
                           AnswerSerializer, TopicSerializer, CommentSerializer, OnlyQuestionSerializer,
-                          UserLoginSerializer, UserCreateSerializer, )
+                          AnswerDetailSerializer, ChildCommentSerializer)
 from rest_framework import status
-from rest_framework.views import APIView
-from rest_framework.generics import CreateAPIView
 from rest_framework.authtoken.models import Token
 from django.core.exceptions import ObjectDoesNotExist
-from django.core.paginator import Paginator
 from site_page.paginator import get_page_list
 from django.db.models import Q
+from django.shortcuts import get_object_or_404
 
 
 @api_view(['GET'])
@@ -132,9 +131,7 @@ def question_answer_home(request, id):
 def answer(request):
     the_topic = request.GET.get('topic')
     p = request.GET.get('p')
-    user_id = request.GET.get('user_id')
     user_answer_id = request.GET.get('user_answer_id')
-    answer_id = request.GET.get('answer_id')
     q = request.GET.get('q')
     if p:
         start = int(p)
@@ -143,15 +140,7 @@ def answer(request):
         start = 0
         end = 10
     if request.method == 'GET':
-        if answer_id:    #答案详情页
-            answer_info = Answer.objects.get(id=answer_id)
-            serializer = AnswerSerializer(answer_info)
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        elif user_id:    #点赞列表页
-            answer_list = UserProfile.objects.get(belong_to_id=user_id).user_vote_answer.all()
-            serializer = AnswerSerializer(answer_list, many=True)
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        elif user_answer_id:    #回答列表页
+        if user_answer_id:    #回答列表页
             answer_list = UserProfile.objects.get(belong_to_id=user_answer_id).answer_author.all()
             serializer = AnswerSerializer(answer_list, many=True)
             return Response(serializer.data, status=status.HTTP_200_OK)
@@ -180,26 +169,49 @@ def answer(request):
 
 
 @api_view(['GET', 'POST'])
+@authentication_classes((TokenAuthentication, ))
+def answer_detail(request, answer_id):
+    if request.method == 'GET':
+        user_id = request.user.profile.id
+        vote_exist = Vote.objects.filter(owner_id=user_id, give_to_id=answer_id).exists()
+        if vote_exist:
+            vote_info = Vote.objects.get(owner_id=user_id, give_to_id=answer_id).vote
+        else:
+            vote_info = 1
+        answer_info = get_object_or_404(Answer, id=answer_id)
+        serializer = AnswerDetailSerializer(answer_info)
+        data = {
+            'answer': serializer.data,
+            'vote': vote_info
+        }
+        return Response(data, status=status.HTTP_200_OK)
+
+
+@api_view(['GET', 'POST'])
 @authentication_classes((TokenAuthentication,))
 def comment(request):
     if request.method == 'GET':
         answer_id = request.GET.get('answer_id')
         now_page = request.GET.get('page')
-        comment_list = Comment.objects.all().filter(answer_id=answer_id)
-        paginator = Paginator(comment_list, 5)
-        num_pages = paginator.num_pages
+        comment_list_num = Comment.objects.all().filter(belong_to_id=answer_id, parent=None).count()
 
-        if now_page is None:
+        if int(comment_list_num) % 5 != 0:
+            num_pages = int(int(comment_list_num) / 5 + 1)
+        else:
+            num_pages = int(int(comment_list_num) / 5)
+
+        if not now_page:
             now_page = 1
             start = 0
         else:
             start = (int(now_page)-1)*5
 
-        if comment_list.count() > start+1:
-            have_next = True
+        if comment_list_num <= start+5:
+            have_next = False
         else:
-            have_next = None
-        comment_list = comment_list[start:start+5]
+            have_next = True
+
+        comment_list = Comment.objects.all().filter(belong_to_id=answer_id, parent=None).order_by('-id')[start:start+5]
         page_list = get_page_list(current_page=int(now_page), left=3, right=4, page_number=num_pages)
         serializer = CommentSerializer(comment_list, many=True)
         data = {
@@ -213,16 +225,29 @@ def comment(request):
         data = request.data
         parent_id = data.get('parent_id')
         content = data.get('content')
+        reply_id = data.get('reply_id')
         answer_id = data.get('answer_id')
         answer_info = Answer.objects.get(id=answer_id)
         user = request.user.profile
-        new_comment = Comment.objects.create(author=user, answer_id=answer_id, content=content, parent_id=parent_id)
+
+        new_comment = Comment.objects.create(comment_user=user, belong_to_id=answer_id,
+                                             content=content, parent_id=parent_id, reply_to_id=reply_id)
         new_comment.save()
-        comment_counts = Comment.objects.filter(answer_id=answer_id).count()
+
+        comment_counts = Comment.objects.filter(belong_to_id=answer_id).count()
         answer_info.comment_counts = comment_counts
         answer_info.save()
 
         return Response({'comment_counts': comment_counts}, status=status.HTTP_200_OK)
+
+
+@api_view(['GET'])
+def child_comments(request, comment_id):
+    if request.method == 'GET':
+        comment_info = Comment.objects.get(id=comment_id)
+        child_comments_list = comment_info.child_comments
+        serializer = ChildCommentSerializer(child_comments_list, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 @api_view(['GET'])
@@ -239,27 +264,54 @@ def topic(request):
 
 @api_view(['GET', 'POST'])
 @authentication_classes((TokenAuthentication,))
-def user_vote(request, answer_id, user_id, like_or='normal'):
-    answer_info = Answer.objects.get(id=answer_id)
-    user = UserProfile.objects.get(belong_to_id=user_id)
-    if request.method == 'GET':
-        vote = request.GET.get('vote')
-        if vote == 'like':
-            # exist = answer_info.user_vote.filter(belong_to=user_id).exists()
-            exist = Vote.objects.filter(owner=user, give_to=answer_info).exists()
-            if exist:
-                Vote.objects.filter(owner=user, give_to=answer_info).delete()
+def user_vote(request):
+    if request.method == 'POST':
 
-                answer_info.user_vote.remove(user)
-                like_or = 'normal'
+        data = request.data
+        vote = int(data['vote'])
+        user_id = request.user.profile.id
+        answer_id = data['answer_id']
+        answer_info = Answer.objects.get(id=answer_id)
+        exists = Vote.objects.filter(owner_id=user_id, give_to_id=answer_id).exists()
+        if exists:
+            vote_info = Vote.objects.get(owner_id=user_id, give_to_id=answer_id)
+            # 如果已经点赞或反对，再次点击则取消
+            if vote == vote_info.vote:
+
+                Vote.delete(vote_info)
+                if vote == 2:
+                    answer_info.like_counts -= 1
+                if vote == 3:
+                    answer_info.dislike_counts -= 1
+                answer_info.save()
+
+            # 把赞同改为反对或相反
             else:
-                vote = Vote.objects.create(owner=user, give_to=answer_info)
-                vote.save()
-                answer_info.user_vote.add(user)
-                like_or = 'like'
-            answer_info.like_counts = answer_info.user_vote.all().count()
+                vote_info.vote = vote
+                vote_info.save()
+                if vote == 2:
+                    answer_info.like_counts += 1
+                    answer_info.dislike_counts -= 1
+                if vote == 3:
+                    answer_info.like_counts -= 1
+                    answer_info.dislike_counts += 1
+                answer_info.save()
+        else:
+            Vote.objects.create(owner_id=user_id, give_to_id=answer_id, vote=vote)
+            if vote == 2:
+                answer_info.like_counts += 1
+            if vote == 3:
+                answer_info.dislike_counts += 1
             answer_info.save()
-    return Response({'like_counts': answer_info.like_counts, 'like_or': like_or}, status=status.HTTP_200_OK)
+
+        # 把赞同反对数保存到数据库，测试发现这种用时间多一点
+        # vote_like_count = Vote.objects.filter(give_to_id=answer_id, vote=2).count()
+        # vote_dislike_count = Vote.objects.filter(give_to_id=answer_id, vote=3).count()
+        # answer_info = Answer.objects.get(id=answer_id)
+        # answer_info.like_counts = vote_like_count
+        # answer_info.dislike_counts = vote_dislike_count
+        # answer_info.save()
+        return Response(status=status.HTTP_200_OK)
 
 
 @api_view(['GET', 'POST'])
@@ -291,21 +343,103 @@ def edit_profile(request, user_id):
         return Response({'msg': '你没有权限'}, status=status.HTTP_400_BAD_REQUEST)
 
 
-class UserCreateAPIView(CreateAPIView):
-    serializer_class = UserCreateSerializer
-    queryset = User.objects.all()
-
-
-class UserLoginAPIView(APIView):
-    permission_classes = []
-    serializer_class = UserLoginSerializer
-
-    def post(self, request, *args, **kwargs):
+@api_view(['GET', 'POST'])
+def register(request):
+    if request.method == "POST":
         data = request.data
-        serializer = self.serializer_class(data=data)
-        if serializer.is_valid(raise_exception=True):
-            user = serializer.validated_data['user']
+        name = data.get('name')
+        passwd = data.get('password')
+
+        # 手机注册用户
+        if 'phone' in data:
+            phone = data.get('phone')
+            user_exist = User.objects.filter(username=phone).exists()
+            # 手机号被注册
+            if user_exist:
+                return Response({'msg': '手机号已被注册'}, status=status.HTTP_400_BAD_REQUEST)
+            else:
+                user_info = User(username=phone)
+                user_info.set_password(passwd)
+                user_info.save()
+                UserProfile.objects.create(belong_to=user_info, name=name, phone=phone)
+
+                return Response({"msg": '注册成功'}, status=status.HTTP_200_OK)
+
+        # 邮箱注册用户
+        elif 'email' in data:
+            email = data.get('email')
+            user_exist = User.objects.filter(username=email).exists()
+            # 邮箱被注册
+            if user_exist:
+                return Response({'msg': '邮箱已被注册'}, status=status.HTTP_400_BAD_REQUEST)
+            else:
+                user_info = User(username=email)
+                user_info.set_password(passwd)
+                user_info.save()
+                UserProfile.objects.create(belong_to=user_info, name=name, email=email)
+
+                return Response({"msg": '注册成功'}, status=status.HTTP_200_OK)
+        else:
+
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['POST'])
+def user_login(request):
+    if request.method == "POST":
+        data = request.data
+        username = data.get('username')
+        password = data.get('password')
+        user = authenticate(username=username, password=password)
+
+        # 判断用户信息是否正确
+        if not user or not username:
+            return Response({'msg': '用户名或密码错误'}, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            # 用户信息正确生成token
             token, created = Token.objects.get_or_create(user=user)
             return Response({'token': token.key}, status=status.HTTP_200_OK)
 
+
+@api_view(['GET'])
+@authentication_classes((TokenAuthentication,))
+def profile_answer_like(request):
+    user_id = request.user.profile.id
+    answer_list = Answer.objects.filter(vote__owner_id=user_id, vote__vote=2).all()
+    serializer = AnswerSerializer(answer_list, many=True)
+    return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+@api_view(['GET', 'POST'])
+@authentication_classes((TokenAuthentication,))
+def profile_answer(request):
+    user_id = request.user.profile.id
+    answer_list = Answer.objects.filter(author_id=user_id).all()
+    serializer = AnswerSerializer(answer_list, many=True)
+    return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+@api_view(['GET'])
+@authentication_classes((TokenAuthentication,))
+def search(request):
+    search_type = request.GET.get('type')
+    q = request.GET.get('q')
+
+    if search_type == 'content':
+        answer_list = Answer.objects.filter(Q(question__title__icontains=q) |
+                                            Q(question__desc__icontains=q) |
+                                            Q(content__icontains=q))
+        serializer = AnswerSerializer(answer_list, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    if search_type == 'topic':
+        topic_list = Topic.objects.filter(Q(name__icontains=q))
+        serializer = TopicSerializer(topic_list, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    if search_type == 'people':
+        user_list = UserProfile.objects.filter(Q(name__icontains=q) | Q(desc__icontains=q))
+        print(user_list)
+        serializer = UserProfileSerializer(user_list, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    else:
+        return Response(status=status.HTTP_400_BAD_REQUEST)
 

@@ -65,7 +65,7 @@
                         </div>
                         <div v-if="!answer.show_all_content" class="description">
                             <p style="font-size:13px;line-height:1.69;font-stretch: normal;">
-                            [[ answer.content | limitBy 150 ]]
+                            [[ answer.abstract ]]
                             <a id="show-all-content-a" v-on:click="showAllContent(answer)">显示全部</a></p>
                         </div>
                         <div v-if="answer.show_all_content" class="description" style="margin-top: 15px">
@@ -153,8 +153,7 @@
                 comment_input_show:true,
                 comment_content:'',
                 user_info:'',
-                login_not:false,
-                login_already:false,
+                login_or:'',
                 question:{
                     title:'',
                     desc: '',
@@ -292,7 +291,16 @@
                     if (self.user_info!= ''&& self.user_info!=undefined){
                         this.userLikeOrNot(answer);
                     }
-                    answer.show_all_content=!answer.show_all_content;
+                    reqwest({
+                        url: '/api/answer/'+ answer.id,
+                        type: 'json',
+                        headers: Cookies.get('token')?{'Authorization': 'Token ' + Cookies.get('token')}:{},
+                        success:function (resp) {
+                            answer.show_all_content=!answer.show_all_content;
+                            answer.content = resp.content
+                        }
+                    })
+                    
                 },
                 commentReplyInput:function (comment) {
                     comment.comment_reply_input = !comment.comment_reply_input
@@ -326,12 +334,11 @@
                         headers: Cookies.get('token')?{'Authorization': 'Token ' + Cookies.get('token')}:{},
                         success:function (resp) {
                             self.user_info = resp;
-                            self.login_already = true
-
+                            self.login_or = true
                             },
                         error:function (err) {
                             json_msg = JSON.parse(err.response);
-                            self.login_not = true
+                            self.login_or = false
                         }
                     })
                 },

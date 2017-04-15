@@ -57,8 +57,7 @@
                 moreOrNot:'加载更多',
                 questions:[],
                 user_info:'',
-                login_already:false,
-                login_not:false,
+                login_or:false,
                 topics:[],
                 topicChoice: '首页',
                 question:{
@@ -155,18 +154,18 @@
                     })
                 },
                 request_user:function () {
-                var self = this;
-                reqwest({
-                    url: '/api/users/now/',
-                    type: 'json',
-                    headers: Cookies.get('token')?{'Authorization': 'Token ' + Cookies.get('token')}:{},
-                    success:function (resp) {
-                        self.user_info = resp;
-                        self.login_already = true
-                        },
-                    error:function (err) {
-                        json_msg = JSON.parse(err.response);
-                        self.login_not = true
+                    var self = this;
+                    reqwest({
+                        url: '/api/users/now/',
+                        type: 'json',
+                        headers: Cookies.get('token')?{'Authorization': 'Token ' + Cookies.get('token')}:{},
+                        success:function (resp) {
+                            self.user_info = resp;
+                            self.login_or = true
+                            },
+                        error:function (err) {
+                            json_msg = JSON.parse(err.response);
+                            self.login_or = false
                         }
                     })
                 },

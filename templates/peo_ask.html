@@ -1,0 +1,192 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>个人中心页</title>
+    <link rel="stylesheet" href="{% static 'css/profile.css' %}" media="screen" title="no title">
+    <link rel="stylesheet" href="{% static 'css/home.css' %}" media="screen" title="no title">
+    {% include 'css_js.html' %}
+</head>
+<body id="app">
+<div id="home-page" style="display: none">
+{% include 'top_nav.html' %}
+
+    <div class="ui basic container segment" style="height: 130px;">
+        <div class="ui image">
+            <img :src="visit_user.profile.avatar" style="width:100px;height:100px" />
+        </div>
+        <h3 id="user-name">
+            [[visit_user.profile.name]]
+            <span id="user-desc">[[visit_user.profile.desc ]]</span>
+        </h3>
+        <a id="editButton" href="/profile/[[visit_user.id]]/edit/" class="ui blue basic button" style="float: right;display: none">修改资料</a>
+    </div>
+    <div class="ui basic segment container">
+        <div class="ui secondary pointing menu">
+            <a id="user_like" class="item " href="/profile/[[visit_user.id]]/">
+                赞过
+            </a>
+            <a id="user_ask" class="item active" href="/profile/[[visit_user.id]]/ask/">
+                提问
+            </a>
+            <a id="user_answer" class="item" href="/profile/[[visit_user.id]]/answer/">
+                回答
+            </a>
+        </div>
+
+        <div class="ui segment">
+                        
+            <div v-if="user_question_show" id="question" class="ui items">
+                <div class="item" v-for="question in user_asks">
+                    <div class="content" style="padding-left:10px;">
+                        <div>
+                            <img class="right floated mini ui image" style="height: 30px;width: 30px" :src="question.author.avatar">
+                            <div class="meta">
+                                <a href="/profile/[[question.author.id]]/" style="font-weight:bold;color:#000000;">[[ question.author.name ]],</a>
+                                <span style="color:#BFBFBF;font-size: 13px">[[ question.author.desc ]]</span>
+                            </div>
+                        </div>
+                        <a href="/question/[[question.id]]/" class="header" style="color:#2e5e9f;font-size:14px;margin-top: 8px">
+                            [[ question.title ]]
+                        </a>
+                        <p style="font-size: 13px;margin-top: 5px">
+                            [[ question.desc ]]
+                        </p>
+                    </div>
+                </div>
+                <div class="ui divider"></div>
+            </div>
+            <div class="ui long button" v-show="noQuestion">
+                <div class="header item">
+                    <a>还没有提问...</a>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    {% include 'footer.html' %}
+</div>
+    <script>
+        Vue.config.delimiters = ["[[", "]]"];
+        vm = new Vue({
+            el: '#app',
+            data:{
+                user_info:'',
+                visit_user:'',
+                login_or:false,
+                question:{
+                    title:'',
+                    desc: '',
+                    topic:''
+                },
+                like_answers:[],
+                user_asks:[],
+                user_answer_show:true,
+                user_question_show:false,
+                ask_active:'',
+                answer_active:'',
+                comments:[],
+                noQuestion:false
+            },
+            methods:{
+                addQuestionBtn:function () {
+                    var self=this;
+                    if (self.user_info==''){
+                        return $('#register-modal').modal('show')
+                    }else{
+                        return $('#question-modal').modal('show');
+                    }
+                },
+                ifLogin:function () {
+                    var self=this;
+                    if (self.user_info==''){
+                        return $('#register-modal').modal('show')
+                    }
+                },
+                addQuestion:function () {
+                    var self = this;
+                        reqwest({
+                        url: '/api/questions/',
+                        type: 'json',
+                        method: 'post',
+                        headers: Cookies.get('token')?{'Authorization': 'Token ' + Cookies.get('token')}:{},
+                        data:{
+                            title:self.question.title,
+                            desc: self.question.desc,
+                            topic:self.question.topic
+                        },
+                        success:function (resp) {
+                            window.location.href= '/question/'+resp.id+'/'
+                        }
+                    })
+                },
+                getUser:function () {
+                    var self = this;
+                    reqwest({
+                        url:'/api/user/' + {{ user_id }} +'/',
+                        type: 'json',
+                        success:function (resp) {
+                            self.visit_user = resp;
+                            self.userAsk()
+                        }
+                    })
+                },
+                userAsk:function () {
+                    var self = this;
+                    reqwest({
+                        url: '/api/only_questions?user_id=' + self.visit_user.id,
+                        type: 'json',
+                        headers: Cookies.get('token')?{'Authorization': 'Token ' + Cookies.get('token')}:{},
+                        success:function (resp) {
+                            self.user_asks = resp;
+                            if (resp.length == 0){
+                                self.noQuestion = true
+                            }
+                            console.log(resp)
+                        }
+                    })
+                },
+                logOut:function () {
+                    Cookies.remove('token');
+                    location.reload()
+                },
+                request_user:function () {
+                    var self = this;
+                    reqwest({
+                        url: '/api/users/now/',
+                        type: 'json',
+                        headers: Cookies.get('token')?{'Authorization': 'Token ' + Cookies.get('token')}:{},
+                        success:function (resp) {
+                            self.user_info = resp;
+                            self.login_or = true
+                            if(self.user_info.id == {{ user_id }}){
+                                document.querySelector('#editButton').style.cssText = "float: right;display: ";
+                            }
+                        },
+                        error:function (err) {
+                            json_msg = JSON.parse(err.response);
+                            self.login_or = false
+                        }
+                    })
+                },
+                displayBody:function () {
+                    document.querySelector('#home-page').style.cssText = "display:";
+                }
+            },
+             ready:function () {
+                 this.request_user();
+                 this.getUser();
+                 this.displayBody();
+            }
+        })
+    </script>
+</body>
+</html>
+
+
+
+
+
+
+

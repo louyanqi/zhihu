@@ -18,10 +18,9 @@ def question(request):
 
 def answer_detail(request, question_id, answer_id):
     question_info = Question.objects.get(id=question_id)
-    answer_info = Answer.objects.get(id=answer_id)
 
     context = {
-        'answer': answer_info,
+        'answer_id': answer_id,
         'question': question_info
     }
 
@@ -50,12 +49,6 @@ def topic_page(request):
     return render(request, "topic.html", context)
 
 
-def index_login(request):
-    context = {}
-
-    return render(request, "login.html", context)
-
-
 def profile(request, user_id):
 
     context = {
@@ -65,10 +58,22 @@ def profile(request, user_id):
     return render(request, 'profile.html', context)
 
 
-def register(request):
-    context = {}
+def profile_ask(request, user_id):
 
-    return render(request, "register.html", context)
+    context = {
+        'user_id': user_id
+    }
+
+    return render(request, 'peo_ask.html', context)
+
+
+def profile_answer(request, user_id):
+
+    context = {
+        'user_id': user_id
+    }
+
+    return render(request, 'peo_answer.html', context)
 
 
 def edit_profile(request, user_id):
@@ -83,24 +88,13 @@ def edit_profile(request, user_id):
 
 def search(request):
     q = request.GET.get('q')
-    search_type = request.GET.get('type')
-    if not search_type:
-        search_type = 'content'
-    user_list = topic_list = answer_list = []
-    if search_type == 'people':
-        user_list = User.objects.filter(Q(username__icontains=q))
-    elif search_type == 'topic':
-        topic_list = Topic.objects.filter(Q(name__icontains=q))
-    else:
-        answer_list = Answer.objects.filter(Q(question__title__icontains=q) |
+    answer_list = Answer.objects.filter(Q(question__title__icontains=q) |
                                             Q(question__desc__icontains=q) |
                                             Q(content__icontains=q))
     print(answer_list)
+    print('#'*65)
     context = {
         'q': q,
-        'user_list': user_list,
-        'topic_list': topic_list,
         'answer_list': answer_list,
-        'search_type': search_type
     }
     return render(request, 'search.html', context)

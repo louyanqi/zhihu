@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+{% load staticfiles %}
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Home</title>
+  </head>
+  <body>
+    <div id="app">
+    	<router-view ></router-view>
+
+    </div>
+    <script src="{% static 'login_register/build.js' %}"></script>
+  <script src="{% static 'login_register/js.cookie.js' %}"></script>
+  <script src="{% static 'login_register/md5.js' %}"></script>
+  </body>
+</html>

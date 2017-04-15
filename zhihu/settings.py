@@ -25,7 +25,7 @@ SECRET_KEY = '^1!)g7g_1eofx=3w0yfj5$gs6%w2yox22doh2*a=@3k9oz#sj-'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['louyq.com', '45.78.1.40']
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -83,17 +83,22 @@ WSGI_APPLICATION = 'zhihu.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/1.10/ref/settings/#databases
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.mysql',
+#         'NAME': 'zhihu',
+#         'HOST': '127.0.0.1',
+#         'PORT': 3306,
+#         'USER': 'root',
+#         'PASSWORD': 'root'
+#     }
+# }
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'zhihu',
-        'HOST': '127.0.0.1',
-        'PORT': 3306,
-        'USER': 'root',
-        'PASSWORD': 'root'
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/1.10/ref/settings/#auth-password-validators

@@ -1,7 +1,12 @@
-.question {
+.answer {
   margin-top: 64px;
   margin-left: 286px;
   width: 588px;
+}
+
+.question {
+  margin: 75px auto 0 auto;
+  width: 700px
 }
 
 .item-answer {
@@ -52,6 +57,17 @@
   margin-top: 6px;
   background-color: #eff6fa;
   position: relative;
+}
+
+.item-answer > .like-or-not  .ui.icon.button.down.dislike{
+
+  background-color: #698ebf;
+
+}
+
+.item-answer > .like-or-not  .ui.icon.button.down.dislike>.ui.caret.down.icon{
+
+   color: white
 }
 
 .item-answer > .content-answer {
