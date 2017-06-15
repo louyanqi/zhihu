@@ -2,34 +2,15 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="5fe2c479-2d3b-4ca9-8cac-1a625279cd3a" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/1.py" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/templates/login.html" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/templates/register.html" afterPath="" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/db.sqlite3" afterPath="$PROJECT_DIR$/db.sqlite3" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/misc.xml" afterPath="$PROJECT_DIR$/.idea/misc.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/zhihu.iml" afterPath="$PROJECT_DIR$/.idea/zhihu.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/site_page/admin.py" afterPath="$PROJECT_DIR$/site_page/admin.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/site_page/api/serializers.py" afterPath="$PROJECT_DIR$/site_page/api/serializers.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/site_page/api/urls.py" afterPath="$PROJECT_DIR$/site_page/api/urls.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/site_page/api/views.py" afterPath="$PROJECT_DIR$/site_page/api/views.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/site_page/models.py" afterPath="$PROJECT_DIR$/site_page/models.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/site_page/urls.py" afterPath="$PROJECT_DIR$/site_page/urls.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/site_page/views.py" afterPath="$PROJECT_DIR$/site_page/views.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/static/css/common.css" afterPath="$PROJECT_DIR$/static/css/common.css" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/static/css/detail.css" afterPath="$PROJECT_DIR$/static/css/detail.css" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/templates/answer_detail.html" afterPath="$PROJECT_DIR$/templates/answer_detail.html" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/templates/css_js.html" afterPath="$PROJECT_DIR$/templates/css_js.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/templates/edit_profile.html" afterPath="$PROJECT_DIR$/templates/edit_profile.html" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/templates/footer.html" afterPath="$PROJECT_DIR$/templates/footer.html" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/templates/home.html" afterPath="$PROJECT_DIR$/templates/home.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/templates/profile.html" afterPath="$PROJECT_DIR$/templates/profile.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/templates/question.html" afterPath="$PROJECT_DIR$/templates/question.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/templates/question_detail.html" afterPath="$PROJECT_DIR$/templates/question_detail.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/templates/search.html" afterPath="$PROJECT_DIR$/templates/search.html" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/templates/top_nav.html" afterPath="$PROJECT_DIR$/templates/top_nav.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/templates/topic.html" afterPath="$PROJECT_DIR$/templates/topic.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/zhihu/settings.py" afterPath="$PROJECT_DIR$/zhihu/settings.py" />
     </list>
     <ignored path="zhihu.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -56,13 +37,26 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="views.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="views.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/site_page/api/views.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="116">
-              <caret line="426" column="0" lean-forward="true" selection-start-line="426" selection-start-column="0" selection-end-line="426" selection-end-column="0" />
+            <state relative-caret-position="-558">
+              <caret line="413" column="33" lean-forward="true" selection-start-line="413" selection-start-column="33" selection-end-line="413" selection-end-column="33" />
               <folding>
                 <element signature="e#0#44#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="home.html" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/templates/home.html">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="286">
+              <caret line="280" column="36" lean-forward="false" selection-start-line="280" selection-start-column="36" selection-end-line="280" selection-end-column="36" />
+              <folding>
+                <marker date="1496927427741" expanded="true" signature="13961:13995" ph="{...}" />
+                <marker date="1496927427741" expanded="true" signature="19009:19289" ph="{...}" />
               </folding>
             </state>
           </provider>
@@ -71,8 +65,8 @@
       <file leaf-file-name="urls.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/site_page/api/urls.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="264">
-              <caret line="24" column="51" lean-forward="true" selection-start-line="24" selection-start-column="51" selection-end-line="24" selection-end-column="51" />
+            <state relative-caret-position="374">
+              <caret line="21" column="23" lean-forward="false" selection-start-line="21" selection-start-column="23" selection-end-line="21" selection-end-column="23" />
               <folding>
                 <element signature="e#0#32#0" expanded="true" />
               </folding>
@@ -83,7 +77,7 @@
       <file leaf-file-name="models.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/site_page/models.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1782">
+            <state relative-caret-position="1694">
               <caret line="81" column="15" lean-forward="false" selection-start-line="81" selection-start-column="15" selection-end-line="81" selection-end-column="15" />
               <folding>
                 <element signature="e#0#28#0" expanded="true" />
@@ -119,6 +113,7 @@
       <find>answer</find>
       <find>comment</find>
       <find>UserSerializer</find>
+      <find>print</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -168,13 +163,13 @@
         <option value="$PROJECT_DIR$/templates/top_nav.html" />
         <option value="$PROJECT_DIR$/1.py" />
         <option value="$PROJECT_DIR$/templates/profile.html" />
-        <option value="$PROJECT_DIR$/templates/home.html" />
         <option value="$PROJECT_DIR$/site_page/api/serializers.py" />
         <option value="$PROJECT_DIR$/site_page/models.py" />
         <option value="$PROJECT_DIR$/site_page/admin.py" />
         <option value="$PROJECT_DIR$/site_page/urls.py" />
         <option value="$PROJECT_DIR$/site_page/views.py" />
         <option value="$PROJECT_DIR$/site_page/api/urls.py" />
+        <option value="$PROJECT_DIR$/templates/home.html" />
         <option value="$PROJECT_DIR$/site_page/api/views.py" />
       </list>
     </option>
@@ -186,8 +181,9 @@
     <sorting>DEFINITION_ORDER</sorting>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="-1" />
-    <option name="width" value="1378" />
+    <option name="x" value="-8" />
+    <option name="y" value="-8" />
+    <option name="width" value="1382" />
     <option name="height" value="744" />
   </component>
   <component name="ProjectLevelVcsManager">
@@ -208,6 +204,7 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="Scratches" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -231,20 +228,6 @@
             </PATH_ELEMENT>
             <PATH_ELEMENT>
               <option name="myItemId" value="zhihu" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="zhihu" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="zhihu" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="templates" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -282,13 +265,12 @@
           </PATH>
         </subPane>
       </pane>
-      <pane id="Scratches" />
       <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
     <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
-    <property name="last_opened_file_path" value="$USER_HOME$/Desktop/login-Register" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../vue-blog" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="DefaultHtmlFileTemplate" value="HTML File" />
     <property name="js-jscs-nodeInterpreter" value="C:\Program Files\nodejs\node.exe" />
@@ -604,10 +586,10 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-1" y="0" width="1378" height="744" extended-state="0" />
+    <frame x="-8" y="-8" width="1382" height="744" extended-state="7" />
     <editor active="true" />
     <layout>
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.14491653" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.1452345" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
@@ -615,7 +597,7 @@
       <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Mongo Explorer" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
-      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.29344264" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.2442623" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
@@ -901,54 +883,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/templates/home.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="6182">
-          <caret line="281" column="21" lean-forward="false" selection-start-line="281" selection-start-column="21" selection-end-line="281" selection-end-column="21" />
-          <folding>
-            <marker date="1492170847437" expanded="true" signature="11384:24653" ph="{&quot;el&quot;: '##app'...}" />
-            <marker date="1492170847437" expanded="true" signature="12368:24490" ph="{...}" />
-            <marker date="1492170847437" expanded="true" signature="18643:19331" ph="{...}" />
-            <marker date="1492170847437" expanded="true" signature="18710:19312" ph="{&quot;type&quot;: 'json'...}" />
-            <marker date="1492170847437" expanded="true" signature="18963:19290" ph="{...}" />
-            <marker date="1492170847437" expanded="true" signature="19255:19290" ph="{...}" />
-            <marker date="1492170847437" expanded="true" signature="19389:19482" ph="{...}" />
-            <marker date="1492170847437" expanded="true" signature="19537:19635" ph="{...}" />
-            <marker date="1492170847437" expanded="true" signature="19682:20514" ph="{...}" />
-            <marker date="1492170847437" expanded="true" signature="19749:20495" ph="{&quot;url&quot;: '/api/comments/'...}" />
-            <marker date="1492170847437" expanded="true" signature="20014:20149" ph="{&quot;content&quot;: self.comment_content...}" />
-            <marker date="1492170847437" expanded="true" signature="20199:20473" ph="{...}" />
-            <marker date="1492170847437" expanded="true" signature="20572:21511" ph="{...}" />
-            <marker date="1492170847437" expanded="true" signature="20639:21492" ph="{&quot;url&quot;: '/api/comments/'...}" />
-            <marker date="1492170847437" expanded="true" signature="20904:21143" ph="{&quot;content&quot;: comment.comment_content...}" />
-            <marker date="1492170847437" expanded="true" signature="21193:21470" ph="{...}" />
-            <marker date="1492170847437" expanded="true" signature="21587:22544" ph="{...}" />
-            <marker date="1492170847437" expanded="true" signature="21654:22525" ph="{&quot;url&quot;: '/api/comments/'...}" />
-            <marker date="1492170847437" expanded="true" signature="21919:22170" ph="{&quot;content&quot;: child_comment.comment_content...}" />
-            <marker date="1492170847437" expanded="true" signature="22220:22503" ph="{...}" />
-            <marker date="1492170847437" expanded="true" signature="22595:23440" ph="{...}" />
-            <marker date="1492170847437" expanded="true" signature="22681:22778" ph="{...}" />
-            <marker date="1492170847437" expanded="true" signature="22783:23422" ph="{...}" />
-            <marker date="1492170847437" expanded="true" signature="22821:23399" ph="{&quot;url&quot;: '/api/user_vote/'...}" />
-            <marker date="1492170847437" expanded="true" signature="23106:23232" ph="{&quot;vote&quot;: vote...}" />
-            <marker date="1492170847437" expanded="true" signature="23282:23373" ph="{...}" />
-            <marker date="1492170847437" expanded="true" signature="23477:23579" ph="{...}" />
-            <marker date="1492170847437" expanded="true" signature="23599:23614" ph=" 预先加载，用户判断用户身... %}" />
-            <marker date="1492170847437" expanded="true" signature="23658:24331" ph="{...}" />
-            <marker date="1492170847437" expanded="true" signature="23725:24312" ph="{&quot;url&quot;: '/api/users/now/'...}" />
-            <marker date="1492170847437" expanded="true" signature="23970:24101" ph="{...}" />
-            <marker date="1492170847437" expanded="true" signature="24148:24290" ph="{...}" />
-            <marker date="1492170847437" expanded="true" signature="24373:24476" ph="{...}" />
-            <marker date="1492170847437" expanded="true" signature="24522:24643" ph="{...}" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/site_page/urls.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="44">
           <caret line="2" column="62" lean-forward="false" selection-start-line="2" selection-start-column="62" selection-end-line="2" selection-end-column="62" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -956,9 +894,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1958">
           <caret line="89" column="20" lean-forward="true" selection-start-line="89" selection-start-column="20" selection-end-line="89" selection-end-column="20" />
-          <folding>
-            <element signature="e#45#80#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -966,7 +901,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="198">
           <caret line="13" column="56" lean-forward="false" selection-start-line="13" selection-start-column="56" selection-end-line="13" selection-end-column="56" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -974,13 +908,12 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="138">
           <caret line="35" column="14" lean-forward="false" selection-start-line="35" selection-start-column="14" selection-end-line="35" selection-end-column="14" />
-          <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/site_page/models.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1782">
+        <state relative-caret-position="1694">
           <caret line="81" column="15" lean-forward="false" selection-start-line="81" selection-start-column="15" selection-end-line="81" selection-end-column="15" />
           <folding>
             <element signature="e#0#28#0" expanded="true" />
@@ -990,8 +923,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/site_page/api/urls.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="264">
-          <caret line="24" column="51" lean-forward="true" selection-start-line="24" selection-start-column="51" selection-end-line="24" selection-end-column="51" />
+        <state relative-caret-position="374">
+          <caret line="21" column="23" lean-forward="false" selection-start-line="21" selection-start-column="23" selection-end-line="21" selection-end-column="23" />
           <folding>
             <element signature="e#0#32#0" expanded="true" />
           </folding>
@@ -1000,10 +933,21 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/site_page/api/views.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="116">
-          <caret line="426" column="0" lean-forward="true" selection-start-line="426" selection-start-column="0" selection-end-line="426" selection-end-column="0" />
+        <state relative-caret-position="-558">
+          <caret line="413" column="33" lean-forward="true" selection-start-line="413" selection-start-column="33" selection-end-line="413" selection-end-column="33" />
           <folding>
             <element signature="e#0#44#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/templates/home.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="286">
+          <caret line="280" column="36" lean-forward="false" selection-start-line="280" selection-start-column="36" selection-end-line="280" selection-end-column="36" />
+          <folding>
+            <marker date="1496927427741" expanded="true" signature="13961:13995" ph="{...}" />
+            <marker date="1496927427741" expanded="true" signature="19009:19289" ph="{...}" />
           </folding>
         </state>
       </provider>

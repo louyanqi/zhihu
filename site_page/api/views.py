@@ -129,6 +129,8 @@ def question_answer_home(request, id):
 @api_view(['GET', 'POST'])
 @authentication_classes((TokenAuthentication,))
 def answer(request):
+    print(request.auth)
+    print(request.user)
     the_topic = request.GET.get('topic')
     p = request.GET.get('p')
     user_answer_id = request.GET.get('user_answer_id')
@@ -172,14 +174,19 @@ def answer(request):
 @authentication_classes((TokenAuthentication, ))
 def answer_detail(request, answer_id):
     if request.method == 'GET':
-        user_id = request.user.profile.id
-        vote_exist = Vote.objects.filter(owner_id=user_id, give_to_id=answer_id).exists()
-        if vote_exist:
-            vote_info = Vote.objects.get(owner_id=user_id, give_to_id=answer_id).vote
+        # 已登录用户判断是否对答案点赞
+        if request.auth:
+            user_id = request.user.profile.id
+            vote_exist = Vote.objects.filter(owner_id=user_id, give_to_id=answer_id).exists()
+            if vote_exist:
+                vote_info = Vote.objects.get(owner_id=user_id, give_to_id=answer_id).vote
+            else:
+                vote_info = 1
         else:
             vote_info = 1
         answer_info = get_object_or_404(Answer, id=answer_id)
         serializer = AnswerDetailSerializer(answer_info)
+
         data = {
             'answer': serializer.data,
             'vote': vote_info
@@ -388,10 +395,11 @@ def register(request):
 def user_login(request):
     if request.method == "POST":
         data = request.data
+        print(data)
         username = data.get('username')
         password = data.get('password')
         user = authenticate(username=username, password=password)
-
+        print(user)
         # 判断用户信息是否正确
         if not user or not username:
             return Response({'msg': '用户名或密码错误'}, status=status.HTTP_400_BAD_REQUEST)
@@ -437,7 +445,6 @@ def search(request):
         return Response(serializer.data, status=status.HTTP_200_OK)
     if search_type == 'people':
         user_list = UserProfile.objects.filter(Q(name__icontains=q) | Q(desc__icontains=q))
-        print(user_list)
         serializer = UserProfileSerializer(user_list, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
     else:

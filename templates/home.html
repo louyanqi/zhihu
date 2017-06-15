@@ -137,7 +137,7 @@
 
                               </div>
 
-                                <div class="comment-pagination" style="border-top: 1px solid #eee;border-bottom: 1px solid #eee;font-size: 1.1em;text-align: center;line-height: 2.7;height: 43px;margin-top: 20px">
+                                <div v-show="page>0" class="comment-pagination" style="border-top: 1px solid #eee;border-bottom: 1px solid #eee;font-size: 1.1em;text-align: center;line-height: 2.7;height: 43px;margin-top: 20px">
                                     <a v-show="havePre" style="padding: .5em;" v-on:click="getPreCom(answer, page)">上一页</a>
                                     <span v-show="!havePre" style="color: #999">上一页</span>
                                     <span v-for="page in page_lists">
@@ -256,9 +256,10 @@
                     }
                 },
                 getAnswer:function () {
+                    console.log(Cookies.get('token'))
                     var self = this;
                     reqwest({
-                        url: '/api/answers/',
+                        url: 'http://127.0.0.1:8000/api/answers/',
                         type: 'json',
                         headers: Cookies.get('token')?{'Authorization': 'Token ' + Cookies.get('token')}:{},
                         success:function (resp) {
@@ -314,7 +315,6 @@
                         type: 'json',
                         headers: Cookies.get('token')?{'Authorization': 'Token ' + Cookies.get('token')}:{},
                         success:function(resp) {
-                            console.log(resp)
                             comment.child_comments = resp
                         }
                     })
@@ -360,7 +360,6 @@
                         type: 'json',
                         headers: Cookies.get('token')?{'Authorization': 'Token ' + Cookies.get('token')}:{},
                         success:function (resp) {
-                            console.log(resp)
                             answer.like_or = resp.vote;
                             answer.like_counts = resp.answer.like_counts;
                             answer.show_all_content=true;
@@ -454,6 +453,23 @@
                             }
                         })
                     }
+                },
+                logIn:function(){
+                    var self = this;
+                    reqwest({
+                        url: '/api/login/',
+                        type:'json',
+                        method:'post',
+                        headers: Cookies.get('token')?{'Authorization': 'Token ' + Cookies.get('token')}:{},
+                        data:{
+                            username: self.username,
+                            password: md5(self.password)
+                        },
+                        success:function(resp){
+                            Cookies.set('token', resp.token)
+                            location.reload()
+                        }
+                    })
                 },
                 logOut:function () {
                     Cookies.remove('token');
